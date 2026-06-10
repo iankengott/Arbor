@@ -477,12 +477,12 @@ p {
 
 .hero {
   position: relative;
-  min-height: clamp(640px, 92svh, 1000px);
+  min-height: clamp(560px, 78svh, 880px);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 80px 0 96px;
+  padding: 72px 0 52px;
   overflow: hidden;
 }
 
@@ -651,7 +651,7 @@ p {
 }
 
 .hero-authors {
-  margin-top: 46px;
+  margin-top: 30px;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;
@@ -1823,3 +1823,33 @@ p {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---- Demo video -------------------------------------------------------- */
+
+.section-demo {
+  padding-top: clamp(24px, 3.4vh, 48px);
+  padding-bottom: clamp(72px, 9vh, 120px);
+}
+
+.demo-frame {
+  position: relative;
+  padding: clamp(10px, 1.2vw, 16px);
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  background:
+    radial-gradient(640px 240px at 80% 0%, rgba(70, 224, 196, 0.08), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.6);
+}
+
+.demo-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #000;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+

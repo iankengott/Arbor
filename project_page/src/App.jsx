@@ -2,6 +2,7 @@ import Intro from './components/Intro.jsx';
 import Header from './sections/Header.jsx';
 import Hero from './sections/Hero.jsx';
 import ProofStrip from './sections/ProofStrip.jsx';
+import Demo from './sections/Demo.jsx';
 import Problem from './sections/Problem.jsx';
 import Method from './sections/Method.jsx';
 import Results from './sections/Results.jsx';
@@ -18,6 +19,7 @@ export default function App() {
       <Header />
       <main>
         <Hero />
+        <Demo />
         <ProofStrip />
         <Problem />
         <Method />

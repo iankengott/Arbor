@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLang } from '../i18n.jsx';
 
 const NAV = [
+  { id: 'demo', label: { en: 'Demo', zh: '演示' } },
   { id: 'method', label: { en: 'Method', zh: '方法' } },
   { id: 'results', label: { en: 'Results', zh: '结果' } },
   { id: 'case', label: { en: 'Case Study', zh: '案例研究' } },

@@ -92,7 +92,7 @@ export default function Hero() {
               </a>
             </Magnet>
             <Magnet padding={70} magnetStrength={4}>
-              <a className="btn" href="#case">
+              <a className="btn" href="#demo">
                 <IconPlay /> {zh ? '实时演示' : 'Live Demo'}
               </a>
             </Magnet>

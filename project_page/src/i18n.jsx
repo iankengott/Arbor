@@ -11,19 +11,25 @@ function initialLang() {
   } catch {
     /* ignore */
   }
-  const nav = (window.navigator.language || '').toLowerCase();
-  return nav.startsWith('zh') ? 'zh' : 'en';
+  // Default to English; respect an explicit toggle saved in localStorage.
+  return 'en';
 }
 
 export function LangProvider({ children }) {
-  const [lang, setLang] = useState(initialLang);
+  const [lang, setLangState] = useState(initialLang);
 
-  useEffect(() => {
+  // Persist only on an explicit toggle, so a fresh visitor always gets the
+  // English default instead of a navigator-derived value sticking in storage.
+  const setLang = (next) => {
+    setLangState(next);
     try {
-      window.localStorage.setItem(STORAGE_KEY, lang);
+      window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* ignore */
     }
+  };
+
+  useEffect(() => {
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
   }, [lang]);
 
