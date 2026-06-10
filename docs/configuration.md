@@ -117,7 +117,7 @@ The `timeout:` group bounds how long individual operations may run (in seconds):
 
 For benchmarks, the most convenient way to set a coherent budget is a **plugin profile**,
 which bundles `max_cycles`, tree depth, executor timeout, and total time budget under one
-name (e.g. `mle_bench_lite_6h`). See [Plugins](plugins.md).
+name (e.g. `mle_bench_lite`). See [Plugins](plugins.md).
 
 ## Human-in-the-loop & monitoring
 

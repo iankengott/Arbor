@@ -68,9 +68,13 @@ Documentation sources are markdown files in `docs/`, with navigation defined in
 If you use Arbor in your research, please cite the paper:
 
 ```bibtex
-@article{jin2026arbor,
-  title  = {Arbor: Toward Generalist Autonomous Research via Hypothesis-Tree Refinement},
-  author = {Jin and collaborators},
-  year   = {2026}
+@misc{jin2026arbor,
+  title  = {Toward Generalist Autonomous Research via Hypothesis-Tree Refinement},
+  author = {Jiajie Jin and Yuyang Hu and Kai Qiu and Qi Dai and Chong Luo and
+            Guanting Dong and Xiaoxi Li and Tong Zhao and Xiaolong Ma and
+            Gongrui Zhang and Zhirong Wu and Bei Liu and Zhengyuan Yang and
+            Linjie Li and Lijuan Wang and Hongjin Qian and Yutao Zhu and Zhicheng Dou},
+  year   = {2026},
+  note   = {Living technical report}
 }
 ```

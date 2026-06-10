@@ -1,8 +1,11 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # AutoResearch — Kaggle / MLE-bench example config
 #
-# Run:  arbor run "Win the competition" --yes --yes-cwd ./your-competition \
-#                 --config kaggle_config.example.yaml
+# Save this as research_config.yaml in your competition repo, then launch the
+# interactive CLI from that directory:
+#
+#   cd ./your-competition
+#   arbor
 #
 # The ONE line that switches the agent into competition mode is `plugin:`.
 # Everything the kaggle domain needs — eval protocol, protected data dirs,
@@ -16,8 +19,8 @@ plugin: mle_kaggle
 
 # Pick one of the plugin's named profiles (optional). Each is a preset bundle of
 # config overrides — e.g. cycle count / depth / timeouts tuned for a budget.
-# Available in mle_kaggle: smoke, mle_bench_lite_6h, ... (see the plugin file).
-plugin_profile: mle_bench_lite_6h
+# Available in mle_kaggle: mle_bench_lite (see the plugin file).
+plugin_profile: mle_bench_lite
 
 llm:
   provider: anthropic

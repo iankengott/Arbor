@@ -5,10 +5,6 @@ hide:
 
 # Arbor
 
-<p align="center">
-  <img src="assets/logo_black.png" alt="Arbor" width="200" style="background:#ffffff;border-radius:18px;padding:16px 28px">
-</p>
-
 <p align="center" markdown>
   *Toward Generalist Autonomous Research via Hypothesis-Tree Refinement*
 </p>

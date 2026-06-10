@@ -18,8 +18,8 @@ of live controls let you steer a run as it happens.
 Per run, on the command line (alias `--mode`):
 
 ```bash
-arbor run --mode review
-arbor run --interaction-mode collaborative
+arbor --mode review
+arbor --interaction-mode collaborative
 ```
 
 Or durably in config:

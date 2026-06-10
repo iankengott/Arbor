@@ -67,11 +67,6 @@ pipx reinstall research-agent     # upgrade later
     Activate the right virtual environment, or use the pipx install above. Run
     `arbor doctor` for a diagnosis.
 
-!!! failure "`ModuleNotFoundError: No module named 'research_agent'`"
-    You're likely running a stale install. Reinstall from the repo root with
-    `pip install -e .`. The code lives in `src/` but is imported as the
-    `research_agent` package.
-
 ## Next steps
 
 - [Quickstart](quickstart.md) — configure a provider and start your first run.

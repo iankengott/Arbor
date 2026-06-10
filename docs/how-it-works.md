@@ -90,8 +90,8 @@ executors optimize and the signal that decides what's kept:
   configurable margin.
 
 This margin-based merge gate is what stops the agent from "improving" by overfitting the
-iteration signal. The `metric_direction` (`maximize`/`minimize`) and the commands that
-produce these signals are declared in your [eval contract](preparing-a-benchmark.md#1-define-how-to-evaluate).
+iteration signal. The metric and its direction (`maximize`/`minimize`) come from your
+project's README and eval script — see [Preparing a Benchmark](preparing-a-benchmark.md).
 
 ## Human-in-the-loop
 

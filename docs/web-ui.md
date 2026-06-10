@@ -34,8 +34,8 @@ The URL is printed in the dashboard header once the server binds, e.g.
 | **Disable** | `--no-webui` skips the browser monitor entirely. |
 
 ```bash
-arbor run --webui-port 9000      # serve the monitor on :9000
-arbor run --no-webui             # no browser monitor at all
+arbor --webui-port 9000      # serve the monitor on :9000
+arbor --no-webui             # no browser monitor at all
 ```
 
 ### Read-only vs. interactive

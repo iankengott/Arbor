@@ -1,128 +1,138 @@
 # Plugins
 
-Plugins retarget Arbor to a **domain** without changing any code. A plugin is a single
-YAML file that declares how to evaluate work, what must stay protected, what outputs are
-required, and a set of ready-made budget profiles. Activate one with a single line of
-config.
+A plugin retargets Arbor to a **domain** without changing any code. It is a single YAML
+file that declares how to evaluate work, what must stay protected, what outputs are
+required, a compute budget, and some domain guidance for the agents.
+
+You only need a plugin when you run the **same kind of benchmark repeatedly** and want
+every run to use identical settings. For a one-off task you don't need one — just prepare a
+repo and launch `arbor` (see [Preparing a Benchmark](preparing-a-benchmark.md)).
+
+## Activating a plugin
+
+Put one line in your project's config (`research_config.yaml`, `arbor.yaml`, or
+`autoresearch.yaml`), then launch the interactive CLI from the project directory:
 
 ```yaml title="research_config.yaml"
-plugin: mle_kaggle
-plugin_profile: mle_bench_lite_6h
+plugin: mle_kaggle        # the only line that switches domains
 ```
 
-## Why plugins
+```bash
+cd my_competition
+arbor
+```
 
-A general research agent needs domain-specific guardrails: the metric to optimize, the
-direction of "better", the data it must never edit, and a sensible compute budget. Rather
-than hard-code these for one benchmark, Arbor reads them from a plugin — so the same agent
-can target Kaggle competitions today and a different domain tomorrow by swapping one name.
+Arbor auto-discovers the config in the project directory; the intake chat then runs with
+the plugin's contract and guidance already applied.
 
 ## The plugin format
 
-Here is the structure, drawn from the bundled `mle_kaggle` plugin:
+Every plugin follows the **same standard shape**. A minimal one needs only a name and an
+eval contract:
 
-```yaml
+```yaml title="minimal_plugin.yaml"
+name: my_domain
+description: "One line on what this plugin optimizes"
+schema_version: 1
+
+eval_contract:
+  metric_direction: maximize          # or: minimize
+  eval_cmd: "bash {cwd}/eval.sh"      # {cwd} -> project directory
+```
+
+Everything else is optional and layered on top. The full set of fields:
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `name` | ✓ | Plugin identifier, referenced by `plugin:` in config. |
+| `description` | ✓ | One-line summary shown in `arbor` plugin listings. |
+| `schema_version` |  | Format version (currently `1`). |
+| `eval_contract` | ✓ | How to score: `metric_direction`, `eval_cmd` (with `{cwd}` substitution), and optional `submission_path` / `sample_submission_path`. |
+| `protected_paths` |  | Glob patterns that are read-only to executors — your data and harness. |
+| `required_outputs` |  | Artifacts that must exist for a run to count as valid. |
+| `profiles` |  | Named budget bundles (`max_cycles`, `max_tree_depth`, `executor_timeout`, `time_budget`), selected with `plugin_profile`. |
+| `config_overrides` |  | Default config values the plugin sets for every run. |
+| Prompt injections |  | Domain guidance merged into the agents' system prompts (see below). |
+
+### Prompt injection points
+
+Domain guidance is added at six well-defined points — four for the **coordinator** (the
+research director) and two for the **executor** (the engineer that runs one experiment):
+
+| Key | Injected into |
+| --- | --- |
+| `meta_preamble_inject` | Top of the coordinator prompt — overall objective and strategy. |
+| `meta_init_inject` | Coordinator's discovery/setup phase. |
+| `meta_ideate_inject` | Coordinator's idea-generation phase. |
+| `meta_decide_inject` | Coordinator's merge/keep-or-prune decisions. |
+| `sub_preamble_inject` | Top of the executor prompt. |
+| `sub_workflow_inject` | Executor's workflow rules and guardrails. |
+
+Each is plain markdown text. Use them to encode domain habits ("always produce a valid
+baseline first", "never write to `data/`"), not to script a specific solution.
+
+### Where each setting wins
+
+Settings combine in a fixed priority order, lowest to highest:
+
+```text
+built-in defaults  <  plugin.config_overrides  <  profiles[active]  <  your YAML config  <  CLI flags
+```
+
+So a value you set in your own config always beats the plugin, and a CLI flag beats
+everything.
+
+## The bundled example: `mle_kaggle`
+
+Arbor ships one plugin, `mle_kaggle`, as a complete worked example for Kaggle / MLE-bench
+competitions. It declares the eval contract, protects the data and harness, requires a
+`submission.csv`, and bundles a benchmark budget profile:
+
+```yaml title="src/plugins/mle_kaggle.yaml (excerpt)"
 name: mle_kaggle
 description: "Engineering optimization for Kaggle/MLE-bench competitions"
 schema_version: 1
 
-# How to score a candidate and which way is "better".
 eval_contract:
-  metric_direction: maximize          # or: minimize
-  eval_cmd: "bash {cwd}/eval.sh"      # {cwd} -> project directory
+  metric_direction: maximize
+  eval_cmd: "bash {cwd}/eval.sh"
   submission_path: "submission.csv"
   sample_submission_path: "data/sample_submission.csv"
 
-# Paths executors may read but must never modify.
 protected_paths:
   - "data/**"
   - "private/**"
   - "evaluation/**"
 
-# Artifacts a valid run must produce.
 required_outputs:
   - "submission.csv"
 
-# Named budget/behaviour bundles, selected via `plugin_profile`.
 profiles:
-  smoke:
-    max_cycles: 2
-    max_tree_depth: 2
-    executor_timeout: 1800
-    time_budget: 3600
-  mle_bench_lite_6h:
-    max_cycles: 8
-    max_tree_depth: 3
-    executor_timeout: 10800
-    time_budget: 21600
-  mle_bench_lite:
+  mle_bench_lite:                 # 24 h MLE-Bench-Lite budget
     max_cycles: 20
     max_tree_depth: 4
-    executor_timeout: 14400
-    time_budget: 86400
-
-# Domain guidance injected into the coordinator's system prompt.
-meta_preamble_inject: |
-  ## Competition Objective
-  You are optimizing for an engineering competition.
-  The sole objective is maximizing the evaluation metric...
+    executor_timeout: 14400       # 4 h per executor
+    time_budget: 86400            # 24 h total
 ```
 
-### Sections
+Select the profile alongside the plugin:
 
-| Section | Purpose |
-| --- | --- |
-| `name`, `description` | Identify the plugin. |
-| `schema_version` | Plugin format version. |
-| `eval_contract` | How to evaluate: `metric_direction`, `eval_cmd` (with `{cwd}` substitution), and the submission/sample paths. |
-| `protected_paths` | Glob patterns that are read-only to executors — your data and harness. |
-| `required_outputs` | Artifacts that must exist for a run to be valid. |
-| `profiles` | Named bundles of `max_cycles`, `max_tree_depth`, `executor_timeout`, and `time_budget`. Selected with `plugin_profile`. |
-| `meta_preamble_inject` | Extra domain instructions merged into the coordinator's system prompt. |
-
-## Profiles
-
-Profiles let you switch budgets by name instead of editing numbers. The bundled
-`mle_kaggle` plugin ships several:
-
-| Profile | Cycles | Depth | Executor timeout | Total budget |
-| --- | --- | --- | --- | --- |
-| `smoke` | 2 | 2 | 30 min | 1 h |
-| `mle_bench_lite_6h` | 8 | 3 | 3 h | 6 h |
-| `mle_bench_lite` | 20 | 4 | 4 h | 24 h |
-| `production_24h` | 20 | 4 | 4 h | 24 h |
-
-```yaml
+```yaml title="research_config.yaml"
 plugin: mle_kaggle
-plugin_profile: mle_bench_lite_6h
+plugin_profile: mle_bench_lite
 ```
 
-Anything you set explicitly in your config or on the command line still overrides the
-profile — see [Configuration → Where configuration comes from](configuration.md#where-configuration-comes-from).
-
-## A complete Kaggle config
-
-```yaml title="kaggle_config.example.yaml"
-plugin: mle_kaggle
-plugin_profile: mle_bench_lite_6h
-
-llm:
-  provider: anthropic
-  model: claude-sonnet-4-5
-  api_key: ${ANTHROPIC_API_KEY}
-```
-
-```bash
-arbor run "maximize the competition metric" \
-  --yes --yes-cwd /path/to/competition \
-  --config /path/to/competition/kaggle_config.yaml
-```
-
-A ready-to-edit version lives at `examples/kaggle_config.example.yaml` in the repository.
+A ready-to-edit config lives at `examples/kaggle_config.example.yaml` in the repository.
 
 ## Writing your own plugin
 
-Copy `src/plugins/mle_kaggle.yaml` as a starting point, adjust the `eval_contract`,
-`protected_paths`, and `profiles` for your domain, and reference it by `name`. Pair it
-with a [Skill](skills.md) when you also want to shape *how* the agent reasons, not just
-what it optimizes.
+1. Copy `src/plugins/mle_kaggle.yaml` (or the minimal template above) and rename it.
+2. Set `name`, `description`, and the `eval_contract` for your domain.
+3. Add `protected_paths` / `required_outputs` if your task has data to guard or artifacts
+   to produce.
+4. Add a `profiles` entry with your compute budget.
+5. Tune the agents with the injection points only if you need domain-specific behaviour.
+
+Reference the plugin by its `name` in a config, then launch `arbor`. Pair it with a
+[Skill](skills.md) when you want to shape *how* the agent reasons, not just what it
+optimizes.

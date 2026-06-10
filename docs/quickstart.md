@@ -40,34 +40,39 @@ See [Configuration](configuration.md) for the full provider matrix.
 
 ## 2. Start a session
 
-The simplest way to begin — run `arbor` inside any directory:
+The way to use Arbor is to run `arbor` inside your project directory:
 
 ```bash
+cd my_project
 arbor
 ```
 
 This opens an **intake chat**. You describe your goal in plain language; the intake agent
-confirms which project directory to work on, helps you shape a plan, and then launches the
-study once you both agree.
+reads your code and README, confirms the metric and baseline, helps you shape a plan, and
+then launches the study once you both agree. From there you stay in the same terminal —
+watching progress and steering the run with slash commands.
 
-You can also seed the goal directly:
+!!! tip "Seed the goal up front"
+    You can pass your objective as the first argument and still go through intake:
 
-```bash
-arbor run "maximize dev score without changing eval or data"
-```
+    ```bash
+    arbor "maximize dev score without changing eval or data"
+    ```
 
-## 3. Skip the chat (headless / scripted)
+??? note "Headless / scripted runs (CI)"
+    To launch without the intake conversation — for benchmarks or CI — skip the chat with
+    `--yes` and point at the project explicitly:
 
-To launch immediately without the intake conversation — useful for benchmarks and CI:
+    ```bash
+    arbor run "improve held-out accuracy" \
+      --yes \
+      --yes-cwd /path/to/project \
+      --config /path/to/project/research_config.yaml
+    ```
 
-```bash
-arbor run "improve held-out accuracy" \
-  --yes \
-  --yes-cwd /path/to/project \
-  --config /path/to/project/research_config.yaml
-```
+    For day-to-day use, prefer the interactive `arbor` above.
 
-## 4. Watch it work
+## 3. Watch it work
 
 While a run is active you get three views:
 
@@ -79,7 +84,7 @@ While a run is active you get three views:
 Inside the dashboard you can steer the run with slash commands such as `/status`, `/tree`,
 `/evidence`, `/cost`, `/pause`, and `/resume`. See the [CLI reference](cli.md#interactive-slash-commands).
 
-## 5. Read the results
+## 4. Read the results
 
 When the run completes, Arbor writes a `REPORT.md` and opens an optional read-only Q&A
 prompt so you can interrogate the finished study (disable with `--no-followup`). All

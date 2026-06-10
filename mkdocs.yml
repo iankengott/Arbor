@@ -8,7 +8,6 @@ copyright: Renmin University of China · Microsoft Research
 
 theme:
   name: material
-  logo: assets/logo_black.png
   favicon: assets/logo_black.png
   icon:
     repo: fontawesome/brands/github

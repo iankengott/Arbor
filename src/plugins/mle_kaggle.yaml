@@ -17,29 +17,11 @@ required_outputs:
   - "submission.csv"
 
 profiles:
-  smoke:
-    max_cycles: 2
-    max_tree_depth: 2
-    executor_timeout: 1800
-    time_budget: 3600
-  mle_bench_lite_6h:
-    # 6 h quick benchmark: generous executor time (3 h) to avoid training
-    # timeouts on vision tasks.  Fewer cycles but each gets a fair shot.
-    max_cycles: 8
-    max_tree_depth: 3
-    executor_timeout: 10800
-    time_budget: 21600
   mle_bench_lite:
     # Default benchmark profile.  24 h per task — matches MLE-Bench-Lite
     # standard evaluation budget.
     # 4 h per executor: enough for multi-fold large-model training + eval.
     # 20 cycles × depth-4 gives ample room for broad + deep exploration.
-    max_cycles: 20
-    max_tree_depth: 4
-    executor_timeout: 14400
-    time_budget: 86400
-  production_24h:
-    # Alias for mle_bench_lite with identical settings.
     max_cycles: 20
     max_tree_depth: 4
     executor_timeout: 14400

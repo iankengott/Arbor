@@ -39,7 +39,7 @@ If a run is interrupted — you stopped it, the machine rebooted, a budget tripp
 from its checkpoint instead of starting over:
 
 ```bash
-arbor run --resume --run-name my-study
+arbor --resume --run-name my-study
 ```
 
 `--resume` reloads the Idea Tree and message history from the existing session and
