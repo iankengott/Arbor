@@ -32,66 +32,30 @@ Arbor 由**两个协作的智能体**组成：
   运行实验，并汇报证据。
 
 <table>
-<tr><td><b>沉淀证据，而非日志</b></td><td>结果、失败模式与提炼出的洞见会保存在持久化的想法树中——不会淹没在滚动缓冲区里。</td></tr>
+<tr><td><b>会累积的假设树</b></td><td>结果、失败模式与提炼出的洞见保存在想法树中并向上反向传播——让后来的想法从更聪明的起点出发，而不是淹没在滚动缓冲区里。</td></tr>
 <tr><td><b>默认的留出纪律</b></td><td>Executor 在 dev 划分上迭代；只有在留出 test 划分上跨过可配置阈值的改进才会被合并。绝不对你优化的指标过拟合。</td></tr>
-<tr><td><b>隔离、可回退的实验</b></td><td>每个实验都在自己的 git worktree、独立分支上运行。在你主动合并之前，<code>main</code> 分支绝不会被触碰。</td></tr>
-<tr><td><b>反向传播的洞见</b></td><td>每次实验后，由 LLM 抽象出"学到了什么"并上推到树中，让同辈与后代想法继承来之不易的上下文。</td></tr>
-<tr><td><b>为真实实验而生</b></td><td>长时间的训练与评测是一等公民：宽裕的墙钟超时、超时后的部分指标恢复，以及可选的分阶段预算（smoke → pilot → full）。</td></tr>
-<tr><td><b>任意模型</b></td><td>Anthropic、OpenAI / Responses API，或任何通过 LiteLLM 接入的 OpenAI 兼容后端（DeepSeek、Gemini、Qwen、vLLM、Ollama、本地网关）。当后端暴露推理轨迹时会被保留。</td></tr>
-<tr><td><b>实时仪表盘 + 只读 WebUI</b></td><td>终端 UI 展示想法树、分支预算、当前动作、token 用量以及内联问答。只读 WebUI 在 <code>127.0.0.1:8765</code> 镜像整个运行过程。</td></tr>
-<tr><td><b>需要时随时人在回路</b></td><td>可完全自主运行，也可在构思阶段以及每个实验开始前暂停以引导方向——而不会污染 Coordinator 的上下文。</td></tr>
-<tr><td><b>无需改代码的领域适配</b></td><td>一行 <code>plugin:</code> 即可把智能体切换到新领域（如 Kaggle/MLE 模式），全部来自一个 YAML；Skill 则是按需加载的 markdown 操作手册。</td></tr>
+<tr><td><b>隔离、可回退的实验</b></td><td>每个实验都在自己的 git worktree、独立分支上运行。在你主动合并之前，<code>main</code> 绝不会被触碰。</td></tr>
+<tr><td><b>为真实实验而生</b></td><td>长时间训练是一等公民：宽裕的超时、超时后的部分指标恢复，以及可选的分阶段预算（smoke → pilot → full）。</td></tr>
+<tr><td><b>任意模型</b></td><td>Anthropic、OpenAI / Responses API，或任何通过 LiteLLM 接入的 OpenAI 兼容后端（DeepSeek、Gemini、Qwen、vLLM、Ollama、本地网关）。</td></tr>
+<tr><td><b>引导与适配</b></td><td>实时终端仪表盘 + 只读 WebUI、在构思/审阅处可选的人在回路，以及一行即切的领域插件——无需改代码。</td></tr>
 </table>
 
 ---
 
 ## 安装
 
-**环境要求：** Python ≥ 3.10 与 Git。
+**环境要求：** Python ≥ 3.10 与 Git。建议使用虚拟环境。
 
 ```bash
 git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
-pip install -e .          # 或：uv pip install -e .
+python -m venv .venv && source .venv/bin/activate   # 推荐
+pip install -e .                                    # 或：uv pip install -e .
+arbor doctor                                        # 检查 PATH、git 与 API key
 ```
 
-就这样——`pip install -e .` 会把 Arbor 及 `arbor` 命令安装进当前 Python 环境。我们建议使用
-虚拟环境以保持隔离：
-
-```bash
-python -m venv .venv && source .venv/bin/activate   # 可选但推荐
-pip install -e .
-```
-
-### 验证
-
-```bash
-arbor version
-arbor doctor      # 检查 PATH、venv 泄漏、git 与 API key
-```
-
-### 可选：用 pipx 安装全局 `arbor` 命令
-
-如果你希望在**任意**目录都能直接用 `arbor` 而无需激活 venv，可改用
-[pipx](https://pipx.pypa.io) 安装——它会替你管理隔离环境：
-
-```bash
-pipx install -e .          # 在克隆下来的 Arbor 目录中执行
-pipx reinstall research-agent   # 之后升级
-```
-
-> 遇到 `arbor: command not found`？通常是因为它被装进了一个未激活、或不在 `PATH` 上的 venv。
-> 运行 `arbor doctor` 做诊断、激活正确的环境，或改用上面的 pipx 安装。
-
-### 文档
-
-完整文档——安装、配置、方法、CLI 参考、插件与技能——位于 [`docs/`](docs/index.md)，并可构建成
-一个文档站点：
-
-```bash
-pip install -e ".[docs]"   # 安装文档依赖
-mkdocs serve               # 在 http://127.0.0.1:8000 实时预览
-```
+> 想要全局命令？`pipx install -e .` 可让 `arbor` 在任意目录可用。
+> 文档站用 `pip install -e ".[docs]" && mkdocs serve` 构建，或点上方 **Docs** 徽章在线阅读。
 
 ---
 
@@ -188,96 +152,53 @@ ROOT (baseline: 20%)
 - **深度 1：** 研究方向（论文标题级别的想法）。
 - **深度 2+：** 具体方法，由 Executor 实现并测试。
 
-### Git 策略
+### Git 策略与评测
 
-```
-main (never touched, always clean)
-  └── research/run_xxx/trunk            (accumulated, verified improvements)
-       ├── research/run_xxx/1.1/...     (experiment branch)
-       ├── research/run_xxx/1.2/...     (experiment branch)
-       └── ...
-```
-
-每个 Executor 都在自己的 worktree 中工作。已验证的改进合并进 `trunk`；当你满意时，再把
-`trunk` 合并回 `main`：
-
-```bash
-git log research/run_xxx/trunk --oneline   # 审阅每一项改进
-git merge research/run_xxx/trunk           # 提升进 main
-```
-
-### 评测纪律
-
-- **Dev 划分** —— 用于日常迭代；Executor 在此评测。
-- **Test 划分** —— 仅在合并入主干之前以及最终报告中使用，以防止过拟合。
+每个 Executor 都在自己的 worktree、独立分支上工作。已验证的改进合并进每次运行的 `trunk`；当你
+满意时，再把 `trunk` 提升进 `main`（`git merge research/run_xxx/trunk`）。Executor 在 **dev**
+划分上迭代，但一个改动只有在 **留出 test** 划分上跨过阈值时才会被保留——以防止过拟合。
 
 ### 人在回路（Human-in-the-loop）
 
-`ui.interaction_mode` 控制你对一次运行的引导程度：
+用 `ui.interaction_mode`（或 `--interaction-mode`）选择你对运行的引导程度：
 
 | 模式 | 行为 |
 | --- | --- |
 | `auto` | 完全自主。 |
-| `direction` | 在构思阶段，Arbor 汇总证据与候选方向，然后问你下一步往哪走。 |
-| `review` | 在向树写入节点之前、以及每个 Executor 启动之前暂停。 |
+| `direction` | 在构思阶段问你下一步往哪走。 |
+| `review` | 在每个节点与 Executor 之前暂停。 |
 | `collaborative` | `direction` + `review`。 |
 
-当 Coordinator 暂停时，你的输入会开启一段与只读伴随智能体的**隔离讨论**——支持多轮，且绝不会
-污染 Coordinator 的主上下文。可临时用 `arbor run ... --interaction-mode collaborative` 覆盖。
+当暂停时，你的输入会开启一段与只读伴随智能体的隔离讨论——绝不会污染 Coordinator 的上下文。
+完整方法见 [`docs/`](docs/index.md)。
 
 ---
 
 ## 配置
 
-LLM 访问只需用 `arbor setup` 配置一次，存放在 `~/.arbor/config.yaml`。只有一个统一的
-`provider` 字段：
-
-| `provider` | 适用于 | 推理轨迹 |
-| --- | --- | --- |
-| `anthropic` | 原生 Anthropic（带 prompt 缓存） | thinking signature 块 |
-| `openai` | 原生 OpenAI / 任何 OpenAI 兼容的 Responses API 端点（默认） | 加密推理 |
-| `litellm` | 统一传输层：DeepSeek / Gemini / Qwen / vLLM / 任何 OpenAI 兼容代理 | 后端暴露时予以保留 |
-
-```yaml
-# 通过 LiteLLM 接入 DeepSeek-R1
-provider: litellm
-model: deepseek/deepseek-reasoner
-
-# 自托管的 vLLM / Ollama chat 网关
-provider: litellm
-model: Qwen/Qwen2.5-72B-Instruct
-base_url: http://localhost:8000/v1
-
-# GPT-5 / Copilot 风格网关（Responses API）
-provider: openai
-model: gpt-5
-base_url: http://localhost:4141/v1
-api_key: dummy
-```
-
-API key 可来自环境变量（`ANTHROPIC_API_KEY`、`OPENAI_API_KEY`），也可来自 `arbor setup`
-或 YAML 的 `api_key` 字段（对本地代理很方便）。完整选项见
+LLM 访问只需用 `arbor setup` 配置一次（存放在 `~/.arbor/config.yaml`），只有一个 `provider`
+字段——`anthropic`、`openai`（含任何 OpenAI 兼容的 Responses 端点），或 `litellm`（用于
+DeepSeek / Gemini / Qwen / vLLM / Ollama / 本地网关）。key 来自环境变量或配置；项目级的任务与
+预算设置放在 `research_config.yaml`。完整选项见
+[配置指南](https://RUC-NLPIR.github.io/Arbor/docs/configuration/) 与
 [`examples/research_config.example.yaml`](examples/research_config.example.yaml)。
 
 ---
 
 ## CLI 参考
 
-日常你只需 `arbor`。更底层的命令保留用于调试与旧流程。
+日常你只需 `arbor`：
 
 | 命令 | 作用 |
 | --- | --- |
-| `arbor` | 启动交互式科研会话（默认等同 `arbor run`）。 |
-| `arbor run ...` | 显式启动一次科研运行。 |
-| `arbor report <session>` | 为之前的会话重新生成 `REPORT.md`。 |
+| `arbor` | 启动交互式科研会话。 |
 | `arbor setup` | 配置 provider / model / key → `~/.arbor/config.yaml`。 |
-| `arbor config init/show/path` | 管理用户配置文件。 |
+| `arbor report <session>` | 为过往会话重新渲染 `REPORT.md`。 |
 | `arbor doctor` | 诊断安装、PATH、git 与 API key。 |
 | `arbor version` | 打印已安装版本。 |
-| `run-research` | 围绕 Coordinator 的底层封装，带完整日志与仪表盘。 |
-| `coordinator` | 直接运行 Coordinator。 |
-| `executor` | 针对单个想法运行一个 Executor。 |
-| `review-research` | 浏览并重新渲染过往运行与仪表盘。 |
+
+更底层的入口（`run-research`、`coordinator`、`executor`、`review-research`）保留用于调试——
+见 [CLI 参考](https://RUC-NLPIR.github.io/Arbor/docs/cli/)。
 
 ---
 
@@ -298,23 +219,14 @@ plugin: mle_kaggle   # 切换到 Kaggle/MLE 模式
 
 ## 输出与续跑（Output & Resume）
 
-一次运行会写出一个会话目录，包含 `REPORT.md`、`events.jsonl`、`run_stats.json`、想法树以及
-每个实验的产物：
+每次运行会在 `.arbor/sessions/` 下写出一个会话目录，包含 `REPORT.md`、`events.jsonl`、
+`run_stats.json`、想法树以及每个实验的产物。运行可续跑——随时用 `Ctrl+C` 中断，之后用
+`--resume` 继续；Arbor 会重新加载想法树并从中断处接续。
 
 ```bash
-ls .arbor/sessions/                       # 找到最近的会话
-arbor report .arbor/sessions/<run_name>   # 重新渲染其报告
+arbor report .arbor/sessions/<run_name>   # 重新渲染过往报告
+arbor --resume --run-name <run_name>      # 继续一次被中断的运行
 ```
-
-运行可续跑——随时用 `Ctrl+C` 中断，之后继续：
-
-```bash
-run-research --cwd ./project --config research_config.yaml            # 首次运行
-run-research --cwd ./project --config research_config.yaml --resume   # 继续
-```
-
-续跑时，Arbor 会加载 `idea_tree.json`（每次变更都原子写入），把任何被中断的 `running` 节点
-重置为 `pending`，并从树的当前状态继续。
 
 ---
 

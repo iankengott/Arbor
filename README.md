@@ -33,68 +33,31 @@ Arbor runs **two cooperating agents**:
   code changes, runs the experiment in an isolated git worktree, and reports evidence.
 
 <table>
-<tr><td><b>Grows evidence, not logs</b></td><td>Results, failure modes, and distilled insights are preserved in a persistent Idea Tree — not lost in a scrollback buffer.</td></tr>
-<tr><td><b>Held-out discipline by default</b></td><td>Executors iterate on a dev split; only improvements that clear a configurable margin on a held-out test split are merged. No overfitting to the metric you optimize.</td></tr>
-<tr><td><b>Isolated, reversible experiments</b></td><td>Every experiment runs in its own git worktree on a dedicated branch. Your <code>main</code> branch is never touched until you merge.</td></tr>
-<tr><td><b>Backpropagated insight</b></td><td>After each experiment, an LLM abstracts what was learned and pushes it up the tree, so sibling and descendant ideas inherit hard-won context.</td></tr>
-<tr><td><b>Built for real experiments</b></td><td>Long-running training and evaluation are first-class: generous wall-clock timeouts, partial-metric recovery on timeout, and optional staged budgets (smoke → pilot → full).</td></tr>
-<tr><td><b>Use any model</b></td><td>Anthropic, OpenAI / Responses API, or anything OpenAI-compatible through LiteLLM (DeepSeek, Gemini, Qwen, vLLM, Ollama, local gateways). Reasoning traces are preserved when the backend exposes them.</td></tr>
-<tr><td><b>Live dashboard + read-only WebUI</b></td><td>A terminal UI shows the tree, branch budgets, current action, token usage, and inline Q&A. A read-only WebUI mirrors the run at <code>127.0.0.1:8765</code>.</td></tr>
-<tr><td><b>Human-in-the-loop when you want it</b></td><td>Run fully autonomous, or pause at ideation and before each experiment to steer direction — without polluting the Coordinator's context.</td></tr>
-<tr><td><b>Domain adaptation without code changes</b></td><td>A one-line <code>plugin:</code> retargets the agent (e.g. Kaggle/MLE mode) via a single YAML; Skills are markdown playbooks loaded on demand.</td></tr>
+<tr><td><b>Cumulative hypothesis tree</b></td><td>Results, failure modes, and distilled insights persist in the Idea Tree and propagate back up — so later ideas start smarter instead of being lost in a scrollback buffer.</td></tr>
+<tr><td><b>Held-out discipline by default</b></td><td>Executors iterate on a dev split; only gains that clear a configurable margin on a held-out test split are merged. No overfitting to the metric you optimize.</td></tr>
+<tr><td><b>Isolated, reversible experiments</b></td><td>Every experiment runs in its own git worktree on a dedicated branch. Your <code>main</code> is never touched until you merge.</td></tr>
+<tr><td><b>Built for real experiments</b></td><td>Long-running training is first-class: generous timeouts, partial-metric recovery on timeout, and optional staged budgets (smoke → pilot → full).</td></tr>
+<tr><td><b>Use any model</b></td><td>Anthropic, OpenAI / Responses API, or anything OpenAI-compatible through LiteLLM (DeepSeek, Gemini, Qwen, vLLM, Ollama, local gateways).</td></tr>
+<tr><td><b>Steer &amp; adapt</b></td><td>A live terminal dashboard and read-only WebUI, optional human-in-the-loop at ideation/review, and one-line domain plugins — no code changes.</td></tr>
 </table>
 
 ---
 
 ## Install
 
-**Requirements:** Python ≥ 3.10 and Git.
+**Requirements:** Python ≥ 3.10 and Git. A virtual environment is recommended.
 
 ```bash
 git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
-pip install -e .          # or: uv pip install -e .
+python -m venv .venv && source .venv/bin/activate   # recommended
+pip install -e .                                    # or: uv pip install -e .
+arbor doctor                                        # verify PATH, git, API keys
 ```
 
-That's it — `pip install -e .` installs Arbor and the `arbor` command into the current
-Python environment. We recommend a virtual environment so it stays isolated:
-
-```bash
-python -m venv .venv && source .venv/bin/activate   # optional but recommended
-pip install -e .
-```
-
-### Verify
-
-```bash
-arbor version
-arbor doctor      # checks PATH, venv leakage, git, and API keys
-```
-
-### Optional: a global `arbor` command with pipx
-
-If you'd rather have `arbor` available in **every** directory without activating a venv,
-install it with [pipx](https://pipx.pypa.io) instead — it manages the isolated
-environment for you:
-
-```bash
-pipx install -e .          # run from the cloned Arbor directory
-pipx reinstall research-agent   # upgrade later
-```
-
-> Seeing `arbor: command not found`? It usually means it was installed into a venv
-> that isn't active or on your `PATH`. Run `arbor doctor` for a diagnosis, activate the
-> right environment, or use the pipx install above.
-
-### Documentation
-
-Full documentation — installation, configuration, the method, the CLI reference, plugins,
-and skills — lives in [`docs/`](docs/index.md) and builds into a documentation site:
-
-```bash
-pip install -e ".[docs]"   # install docs dependencies
-mkdocs serve               # live preview at http://127.0.0.1:8000
-```
+> Prefer a global command? `pipx install -e .` makes `arbor` available everywhere.
+> For the docs site, `pip install -e ".[docs]" && mkdocs serve`, or read them online
+> via the **Docs** badge above.
 
 ---
 
@@ -192,100 +155,57 @@ ROOT (baseline: 20%)
 - **Depth 1:** research directions (paper-title-level ideas).
 - **Depth 2+:** concrete methods, implemented and tested by Executors.
 
-### Git strategy
+### Git strategy & evaluation
 
-```
-main (never touched, always clean)
-  └── research/run_xxx/trunk            (accumulated, verified improvements)
-       ├── research/run_xxx/1.1/...     (experiment branch)
-       ├── research/run_xxx/1.2/...     (experiment branch)
-       └── ...
-```
-
-Each Executor works in its own worktree. Verified improvements merge into `trunk`; you
-merge `trunk` back into `main` when you're satisfied:
-
-```bash
-git log research/run_xxx/trunk --oneline   # review every improvement
-git merge research/run_xxx/trunk           # promote into main
-```
-
-### Evaluation discipline
-
-- **Dev split** — used for day-to-day iteration; Executors evaluate here.
-- **Test split** — used only before merging into trunk and in the final report, to
-  guard against overfitting.
+Each Executor works in its own worktree on a dedicated branch. Verified improvements merge
+into a per-run `trunk`; you promote `trunk` into `main` only when satisfied
+(`git merge research/run_xxx/trunk`). Executors iterate on a **dev** split, but a change is
+kept only if it clears a margin on the **held-out test** split — guarding against
+overfitting.
 
 ### Human-in-the-loop
 
-`ui.interaction_mode` controls how much you steer a run:
+Set `ui.interaction_mode` (or `--interaction-mode`) to choose how much you steer:
 
 | Mode | Behavior |
 | --- | --- |
 | `auto` | Fully autonomous. |
-| `direction` | At ideation, Arbor summarizes evidence and candidate axes, then asks you where to go next. |
-| `review` | Pauses before writing a node to the tree and before each Executor starts. |
+| `direction` | Asks you where to go next at ideation. |
+| `review` | Pauses before each node and Executor. |
 | `collaborative` | `direction` + `review`. |
 
-When the Coordinator pauses, your input opens an **isolated discussion** with a
-read-only companion — multi-turn, and it never pollutes the Coordinator's main
-context. Override on the fly with `arbor run ... --interaction-mode collaborative`.
+When paused, your input opens an isolated discussion with a read-only companion — it never
+pollutes the Coordinator's context. See [`docs/`](docs/index.md) for the full method.
 
 ---
 
 ## Configuration
 
-LLM access is configured once with `arbor setup` and stored in `~/.arbor/config.yaml`.
-There is a single unified `provider` field:
-
-| `provider` | Use it for | Reasoning trace |
-| --- | --- | --- |
-| `anthropic` | Native Anthropic (with prompt caching) | thinking signature blocks |
-| `openai` | Native OpenAI / any OpenAI-compatible Responses API endpoint (default) | encrypted reasoning |
-| `litellm` | Unified transport: DeepSeek / Gemini / Qwen / vLLM / any OpenAI-compatible proxy | preserved when the backend exposes it |
-
-```yaml
-# DeepSeek-R1 via LiteLLM
-provider: litellm
-model: deepseek/deepseek-reasoner
-
-# Self-hosted vLLM / Ollama chat gateway
-provider: litellm
-model: Qwen/Qwen2.5-72B-Instruct
-base_url: http://localhost:8000/v1
-
-# GPT-5 / Copilot-style gateway (Responses API)
-provider: openai
-model: gpt-5
-base_url: http://localhost:4141/v1
-api_key: dummy
-```
-
-API keys can come from the environment (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`) or from
-`arbor setup` / the YAML `api_key` field (handy for local proxies). See
-[`examples/research_config.example.yaml`](examples/research_config.example.yaml) for the
-full set of options.
+LLM access is configured once with `arbor setup` (stored in `~/.arbor/config.yaml`) via a
+single `provider` field — `anthropic`, `openai` (incl. any OpenAI-compatible Responses
+endpoint), or `litellm` for DeepSeek / Gemini / Qwen / vLLM / Ollama / local gateways. Keys
+come from the environment or the config; per-project task and budget settings live in
+`research_config.yaml`. See the
+[configuration guide](https://RUC-NLPIR.github.io/Arbor/docs/configuration/) and
+[`examples/research_config.example.yaml`](examples/research_config.example.yaml) for every
+option.
 
 ---
 
 ## CLI Reference
 
-Day to day you only need `arbor`. The lower-level commands remain for debugging and
-legacy flows.
+Day to day you only need `arbor`:
 
 | Command | What it does |
 | --- | --- |
-| `arbor` | Start an interactive research session (defaults to `arbor run`). |
-| `arbor run ...` | Explicitly start a research run. |
-| `arbor report <session>` | Regenerate `REPORT.md` for a previous session. |
+| `arbor` | Start an interactive research session. |
 | `arbor setup` | Configure provider / model / keys → `~/.arbor/config.yaml`. |
-| `arbor config init/show/path` | Manage the user config file. |
+| `arbor report <session>` | Re-render `REPORT.md` for a past session. |
 | `arbor doctor` | Diagnose install, PATH, git, and API keys. |
 | `arbor version` | Print the installed version. |
-| `run-research` | Lower-level wrapper around the Coordinator with full logging and dashboards. |
-| `coordinator` | Run the Coordinator directly. |
-| `executor` | Run a single Executor against one idea. |
-| `review-research` | Browse and re-render past runs and dashboards. |
+
+Lower-level entry points (`run-research`, `coordinator`, `executor`, `review-research`)
+remain for debugging — see the [CLI reference](https://RUC-NLPIR.github.io/Arbor/docs/cli/).
 
 ---
 
@@ -307,23 +227,15 @@ demand at runtime. A copy-pasteable Kaggle config lives in
 
 ## Output & Resume
 
-A run writes a session directory containing `REPORT.md`, `events.jsonl`,
-`run_stats.json`, the Idea Tree, and per-experiment artifacts:
+Each run writes a session directory with `REPORT.md`, `events.jsonl`, `run_stats.json`, the
+Idea Tree, and per-experiment artifacts under `.arbor/sessions/`. Runs are resumable —
+interrupt with `Ctrl+C` and continue later with `--resume`; Arbor reloads the Idea Tree and
+picks up where it left off.
 
 ```bash
-ls .arbor/sessions/                       # find the latest session
-arbor report .arbor/sessions/<run_name>   # re-render its report
+arbor report .arbor/sessions/<run_name>   # re-render a past report
+arbor --resume --run-name <run_name>      # continue an interrupted run
 ```
-
-Runs are resumable — interrupt with `Ctrl+C` any time and continue later:
-
-```bash
-run-research --cwd ./project --config research_config.yaml            # first run
-run-research --cwd ./project --config research_config.yaml --resume   # continue
-```
-
-On resume, Arbor loads `idea_tree.json` (written atomically on every change), resets any
-interrupted `running` node to `pending`, and continues from the tree's current state.
 
 ---
 
