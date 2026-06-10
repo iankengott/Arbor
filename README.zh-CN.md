@@ -42,17 +42,7 @@ Arbor 由**两个协作智能体**组成：
 
 ## 演示
 
-<p align="center">
-  <a href="https://RUC-NLPIR.github.io/Arbor/#demo">
-    <img src="assets/demo-poster.png" alt="观看 Arbor 演示" width="100%">
-  </a>
-</p>
-
-<p align="center">
-  <i>Arbor 跑一次完整的研究循环——提出假设、改代码、跑实验，并把留出集上验证有效的改进合并回假设树。</i>
-  <br>
-  ▶ <a href="https://RUC-NLPIR.github.io/Arbor/#demo">在项目主页观看演示</a> · <a href="assets/demo.mp4">下载视频</a>
-</p>
+https://github.com/user-attachments/assets/49c1a306-d2e9-49d6-9c83-65e38a62df30
 
 ## CLI 版与 Skill 版
 
