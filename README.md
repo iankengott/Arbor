@@ -7,7 +7,7 @@
 
 
 <p align="center">
-  <a href="assets/arbor_paper.pdf"><img src="https://img.shields.io/badge/Paper-PDF-B31B1B?style=for-the-badge" alt="Paper"></a>
+  <a href="https://arxiv.org/pdf/2606.11926"><img src="https://img.shields.io/badge/Paper-arXiv-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white" alt="Paper"></a>
   <a href="https://github.com/RUC-NLPIR/Arbor"><img src="https://img.shields.io/badge/Code-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/"><img src="https://img.shields.io/badge/Project_Page-Live-0E9B9B?style=for-the-badge&logo=githubpages&logoColor=white" alt="Project Page"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/docs/"><img src="https://img.shields.io/badge/Docs-Material-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
@@ -26,7 +26,7 @@ grows a **hypothesis tree**: every idea becomes a branch — pruned if it fails,
 harvested if it works — and insights propagate back so later ideas start smarter.
 
 For more details, visit our [project page](https://RUC-NLPIR.github.io/Arbor/)
-and read the [paper](assets/arbor_paper.pdf). For a more detailed usage manual,
+and read the [paper](https://arxiv.org/pdf/2606.11926). For a more detailed usage manual,
 see our [documentation](https://RUC-NLPIR.github.io/Arbor/docs/). 🧭 You can also
 choose the [CLI or Skill version](#-cli-and-skill-versions) depending on your
 environment and workflow.
@@ -332,7 +332,7 @@ wins the held-out test on all six tasks against strong single-agent baselines.
 | Math-Reasoning Data | gap ↑ | 1.04 | 6.25 | 8.33 | **20.83** | +19.79 |
 
 On **MLE-Bench Lite** with GPT-5.5, Arbor reaches **86.36% Any-Medal** (100% valid
-submissions, 95.45% above median, 77.27% gold). See the [paper](assets/arbor_paper.pdf)
+submissions, 95.45% above median, 77.27% gold). See the [paper](https://arxiv.org/pdf/2606.11926)
 for full protocols and ablations.
 
 ---

@@ -82,7 +82,7 @@ export default function Hero() {
         <Reveal delay={0.32} distance={18}>
           <div className="hero-actions">
             <Magnet padding={70} magnetStrength={4}>
-              <a className="btn btn-primary" href="assets/paper/arbor.pdf" target="_blank" rel="noreferrer">
+              <a className="btn btn-primary" href="https://arxiv.org/pdf/2606.11926" target="_blank" rel="noreferrer">
                 <IconPaper /> {zh ? '阅读论文' : 'Read Paper'}
               </a>
             </Magnet>
