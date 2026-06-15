@@ -38,7 +38,7 @@ jobs:
       # ── Project page: Vite/React -> _site (root) ─────────────────────
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: project_page/package-lock.json
       - name: Build project page

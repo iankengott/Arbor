@@ -108,7 +108,7 @@ Arbor ships one plugin, `mle_kaggle`, as a complete worked example for Kaggle / 
 competitions. It declares the eval contract, protects the data and harness, requires a
 `submission.csv`, and bundles a benchmark budget profile:
 
-```yaml title="src/plugins/mle_kaggle.yaml (excerpt)"
+```yaml title="src/arbor/plugins/mle_kaggle.yaml (excerpt)"
 name: mle_kaggle
 description: "Engineering optimization for Kaggle/MLE-bench competitions"
 schema_version: 1

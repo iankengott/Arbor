@@ -7,68 +7,68 @@ tree.
 
 - `README.md`: product behavior, CLI commands, session layout, B_dev/B_test
   discipline, long-running experiment policy.
-- `src/cli/commands/run.py`: `arbor run`, intake, preflight,
+- `src/arbor/cli/commands/run.py`: `arbor run`, intake, preflight,
   Research Contract, session directory, EventBus, dashboard, report, resume.
-- `src/cli/intake/system_prompt.py`: planning assistant contract
+- `src/arbor/cli/intake/system_prompt.py`: planning assistant contract
   and fast-path behavior.
-- `src/cli/intake/launch_tool.py`: `LaunchExperiment` schema.
-- `src/cli/preflight.py`: LLM/cwd/git/eval checks.
-- `src/cli/branch_guard.py`: base-branch guard.
+- `src/arbor/cli/intake/launch_tool.py`: `LaunchExperiment` schema.
+- `src/arbor/cli/preflight.py`: LLM/cwd/git/eval checks.
+- `src/arbor/cli/branch_guard.py`: base-branch guard.
 
 ## Coordinator
 
-- `src/coordinator/orchestrator.py`: single persistent ReAct loop,
+- `src/arbor/coordinator/orchestrator.py`: single persistent ReAct loop,
   gitignore enforcement, dirty repo check, trunk checkout, lifecycle hooks,
   tree init/resume, plugin eval contract, checkpoint writes, final report.
-- `src/coordinator/prompts.py`: coordinator identity and full Arbor
+- `src/arbor/coordinator/prompts.py`: coordinator identity and full Arbor
   cycle protocol.
-- `src/coordinator/config.py`: config, budget policy, search config,
+- `src/arbor/coordinator/config.py`: config, budget policy, search config,
   skill flags, tree paths.
-- `src/coordinator/idea_tree.py`: `IdeaTree.VERSION = 3`, node
+- `src/arbor/coordinator/idea_tree.py`: `IdeaTree.VERSION = 3`, node
   fields, metadata defaults, rendering, constraints view.
-- `src/coordinator/checkpoint.py`: checkpoint and messages schema.
+- `src/arbor/coordinator/checkpoint.py`: checkpoint and messages schema.
 
 ## Coordinator Tools
 
-- `src/coordinator/tools/tree_ops.py`: `TreeView`, `TreeAddNode`,
+- `src/arbor/coordinator/tools/tree_ops.py`: `TreeView`, `TreeAddNode`,
   `TreeUpdateNode`, `TreePrune`, `TreeSetMeta`, `TreePropagate`.
-- `src/coordinator/tools/executor_run.py`: `RunExecutor`,
+- `src/arbor/coordinator/tools/executor_run.py`: `RunExecutor`,
   `RunExecutorParallel`, worktree lifecycle, executor prompt, artifact saving,
   report parsing, cycle caps, HITL review gates.
-- `src/coordinator/tools/git_ops.py`: `GitMergeBranch`, protected
+- `src/arbor/coordinator/tools/git_ops.py`: `GitMergeBranch`, protected
   branch guard, B_test worktree eval, retry/backoff, protected paths, required
   outputs, medal handling.
-- `src/coordinator/tools/search_ctx.py`: `SearchIdeaContext`,
+- `src/arbor/coordinator/tools/search_ctx.py`: `SearchIdeaContext`,
   `SearchIdeaContextParallel`, `SearchStatus`, background SearchAgent tasks,
   validated-node gate.
 
 ## Executor
 
-- `src/executor/prompts.py`: executor identity, code discipline,
+- `src/arbor/executor/prompts.py`: executor identity, code discipline,
   workflow, RunTraining policy, report format.
-- `src/core/tools/run_training.py`: long command execution, metric
+- `src/arbor/core/tools/run_training.py`: long command execution, metric
   extraction, idle timeout, partial log handling.
-- `src/core/git_artifacts.py`: commit/artifact path filtering.
+- `src/arbor/core/git_artifacts.py`: commit/artifact path filtering.
 
 ## Skills And Plugins
 
-- `src/core/skill_registry.py`: built-in and project skill loading.
-- `src/core/tools/skill.py`: `LoadSkill` tool.
-- `src/skills/idea_drafting.md`: strict IDEATE methodology.
-- `src/skills/first_principles_probe.md`: diagnostic probe.
-- `src/plugins/base.py`: plugin schema and load/discover logic.
-- `src/plugins/mle_kaggle.yaml`: performance-first plugin,
+- `src/arbor/core/skill_registry.py`: built-in and project skill loading.
+- `src/arbor/core/tools/skill.py`: `LoadSkill` tool.
+- `src/arbor/skills/idea_drafting.md`: strict IDEATE methodology.
+- `src/arbor/skills/first_principles_probe.md`: diagnostic probe.
+- `src/arbor/plugins/base.py`: plugin schema and load/discover logic.
+- `src/arbor/plugins/mle_kaggle.yaml`: performance-first plugin,
   eval contract, protected paths, required outputs, profiles, lifecycle
   behavior.
 - `docs/plugins.md`: user-facing plugin and skill contract.
 
 ## Reports And Observability
 
-- `src/events/types.py`: event names.
-- `src/events/payloads.py`: typed payload contract.
-- `src/report/generator.py`: `REPORT.md` rendering from session
+- `src/arbor/events/types.py`: event names.
+- `src/arbor/events/payloads.py`: typed payload contract.
+- `src/arbor/report/generator.py`: `REPORT.md` rendering from session
   artifacts.
-- `src/cli/run_dashboard.py`, `src/webui/*`: dashboard
+- `src/arbor/cli/run_dashboard.py`, `src/arbor/webui/*`: dashboard
   and browser monitor behavior.
 
 ## Key Differences From The Wrong Single-Skill Extraction

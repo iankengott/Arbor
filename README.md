@@ -116,7 +116,7 @@ skill suite. After installation, invoke `$arbor-research-agent` in Codex or
 you would in Arbor. The skill suite performs Arbor-style clarification first
 when target, metric, data, permissions, budget, or run mode are unclear, then
 loads the orchestrator and phase skills. This is separate from the internal
-runtime skills stored under `src/skills/`.
+runtime skills stored under `src/arbor/skills/`.
 
 ---
 
@@ -135,6 +135,11 @@ arbor doctor                                        # verify PATH, git, API keys
 > Prefer a global command? `pipx install -e .` makes `arbor` available everywhere.
 > For the docs site, `pip install -e ".[docs]" && mkdocs serve`, or read them online
 > via the **Docs** badge above.
+
+> **Disk-space warning:** Arbor can create multiple worktrees, logs, and experiment
+> artifacts during long runs. If this project directory grows past **100 GB**,
+> pause and clean up old worktrees, checkpoints, caches, or run artifacts before
+> starting more experiments. Check size with `du -sh .` from the repo root.
 
 ---
 
@@ -349,22 +354,23 @@ for full protocols and ablations.
 
 ## 🗂️ Project Structure
 
-The code lives in `src/` and is imported as the `arbor` package.
+The Python package uses the standard `src` layout and is imported as `arbor`.
 
 ```
-src/                 # the `arbor` package
-├── core/            Shared infrastructure: ReAct loop, tools, LLM providers, context mgmt
-├── executor/        Executor agent + `executor` CLI
-├── coordinator/     Coordinator agent, Idea Tree, orchestrator, coordinator tools
-├── cli/             `arbor` CLI: intake, live dashboard, setup, doctor, config
-├── events/          Typed event bus and payloads
-├── report/          Report generation
-├── webui/           Read-only run-monitoring web server
-├── plugins/         Domain plugins (e.g. mle_kaggle.yaml)
-├── skills/          On-demand markdown playbooks
-├── dashboard.py     HTML dashboard generator
-├── run.py           `run-research` CLI
-└── review.py        `review-research` CLI
+src/
+└── arbor/           # the importable Python package
+    ├── core/        Shared infrastructure: ReAct loop, tools, LLM providers, context mgmt
+    ├── executor/    Executor agent + `executor` CLI
+    ├── coordinator/ Coordinator agent, Idea Tree, orchestrator, coordinator tools
+    ├── cli/         `arbor` CLI: intake, live dashboard, setup, doctor, config
+    ├── events/      Typed event bus and payloads
+    ├── report/      Report generation
+    ├── webui/       Read-only run-monitoring web server
+    ├── plugins/     Domain plugins (e.g. mle_kaggle.yaml)
+    ├── skills/      On-demand markdown playbooks
+    ├── dashboard.py HTML dashboard generator
+    ├── run.py       `run-research` CLI
+    └── review.py    `review-research` CLI
 ```
 
 ---

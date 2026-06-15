@@ -43,6 +43,14 @@ from .tools.tree_ops import TreeAddNodeTool
 log = logging.getLogger(__name__)
 
 
+def _source_tree_root() -> Path | None:
+    """Return the repository root when running from an editable source tree."""
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "pyproject.toml").is_file() and (parent / "src" / "arbor").is_dir():
+            return parent
+    return None
+
+
 def _git_output(cwd: str, *args: str) -> str | None:
     """Return git command output, or None when cwd is not a usable git repo."""
     try:
@@ -65,8 +73,9 @@ async def _run_lifecycle_script(
     if raw_path.is_absolute():
         candidates = [raw_path]
     else:
-        repo_root = Path(__file__).resolve().parents[2]
-        candidates = [Path(cwd) / raw_path, repo_root / raw_path]
+        candidates = [Path(cwd) / raw_path]
+        if repo_root := _source_tree_root():
+            candidates.append(repo_root / raw_path)
 
     full_path = next((p for p in candidates if p.exists()), None)
     if full_path is None:

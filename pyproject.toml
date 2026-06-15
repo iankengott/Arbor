@@ -37,33 +37,17 @@ review-research = "arbor.review:cli"
 requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
-# The code lives in `src/` on disk but is imported as the `arbor`
-# package, so we map the package root with `package-dir` and list the
-# sub-packages explicitly (auto-discovery can't rename `src/` -> the import
-# name). Add new sub-packages here when you create them.
 [tool.setuptools]
-package-dir = { "arbor" = "src" }
-packages = [
-    "arbor",
-    "arbor.cli",
-    "arbor.cli.commands",
-    "arbor.cli.intake",
-    "arbor.coordinator",
-    "arbor.coordinator.tools",
-    "arbor.core",
-    "arbor.core.llm",
-    "arbor.core.tools",
-    "arbor.core.tools.web",
-    "arbor.events",
-    "arbor.events.subscribers",
-    "arbor.executor",
-    "arbor.plugins",
-    "arbor.report",
-    "arbor.search_agent",
-    "arbor.webui",
-]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["arbor*"]
 
 [tool.setuptools.package-data]
 "arbor" = ["skills/*.md"]
 "arbor.webui" = ["index.html"]
 "arbor.plugins" = ["*.yaml", "*.yml"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
