@@ -1,0 +1,15 @@
+task: >
+  Improve the simulation workflow score by editing scripts/configs only. Preserve
+  raw input data. Each attempt must produce outputs/metrics.json with a numeric
+  score and enough metadata to audit the run.
+
+executor:
+  experiment_cmd: "nix develop .#base --command python scripts/evaluate.py --config configs/example.yaml"
+  max_turns: 80
+
+coordinator:
+  max_cycles: 5
+  max_depth: 2
+  merge_threshold: 0.01
+  ui:
+    interaction_mode: review

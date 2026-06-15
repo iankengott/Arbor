@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+.snakemake/
+.ipynb_checkpoints/
+
+# Runtime outputs. Keep directory placeholders, not generated run artifacts.
+outputs/*
+!outputs/.gitkeep
+logs/*
+!logs/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Local environment/cache files.
+.env
+.direnv/
+result
+result-*

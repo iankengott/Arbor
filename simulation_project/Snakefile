@@ -1,0 +1,11 @@
+configfile: "configs/example.yaml"
+
+rule all:
+    input:
+        "outputs/metrics.json"
+
+rule evaluate:
+    output:
+        "outputs/metrics.json"
+    shell:
+        "python scripts/evaluate.py --config configs/example.yaml"
