@@ -8,7 +8,8 @@
 
 <p align="center">
   <a href="https://arxiv.org/pdf/2606.11926"><img src="https://img.shields.io/badge/Paper-arXiv-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white" alt="Paper"></a>
-  <a href="https://github.com/RUC-NLPIR/Arbor"><img src="https://img.shields.io/badge/Code-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+  <a href="https://github.com/iankengott/Arbor"><img src="https://img.shields.io/badge/Fork-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub fork"></a>
+  <a href="https://github.com/RUC-NLPIR/Arbor"><img src="https://img.shields.io/badge/Upstream-RUC--NLPIR-555555?style=for-the-badge&logo=github&logoColor=white" alt="Upstream GitHub"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/"><img src="https://img.shields.io/badge/Project_Page-Live-0E9B9B?style=for-the-badge&logo=githubpages&logoColor=white" alt="Project Page"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/docs/"><img src="https://img.shields.io/badge/Docs-Material-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white" alt="License: Apache 2.0"></a>
@@ -30,6 +31,13 @@ and read the [paper](https://arxiv.org/pdf/2606.11926). For a more detailed usag
 see our [documentation](https://RUC-NLPIR.github.io/Arbor/docs/). 🧭 You can also
 choose the [CLI or Skill version](#-cli-and-skill-versions) depending on your
 environment and workflow.
+
+> **Fork note:** This public fork tracks the upstream
+> [`RUC-NLPIR/Arbor`](https://github.com/RUC-NLPIR/Arbor) project and adds a
+> standard `src/arbor` package layout, regression smoke tests, an updated Vite
+> project-page toolchain with a clean audit, and a Nix-based simulation starter
+> project under [`simulation_project/`](simulation_project/). The research paper,
+> project page, and hosted docs remain the upstream Arbor references.
 
 ## 💡 Why Arbor
 
@@ -125,7 +133,7 @@ runtime skills stored under `src/arbor/skills/`.
 **Requirements:** Python ≥ 3.10 and Git. A virtual environment is recommended.
 
 ```bash
-git clone https://github.com/RUC-NLPIR/Arbor.git
+git clone https://github.com/iankengott/Arbor.git
 cd Arbor
 python -m venv .venv && source .venv/bin/activate   # recommended
 pip install -e .                                    # or: uv pip install -e .
