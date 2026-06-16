@@ -10,5 +10,5 @@ def test_source_tree_root_tracks_standard_src_layout() -> None:
 
     assert root is not None
     assert (root / "pyproject.toml").is_file()
-    assert (root / "src" / "arbor").is_dir()
+    assert (root / "src" / "__init__.py").is_file()
     assert root == Path(__file__).resolve().parents[1]

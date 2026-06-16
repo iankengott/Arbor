@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import datetime
 import os
+import shlex
 import sys
 import threading
 import time
@@ -66,7 +67,6 @@ try:
         BufferControl, Float, FloatContainer, FormattedTextControl, HSplit, Window,
     )
     from prompt_toolkit.layout import Layout as PTLayout
-    from prompt_toolkit.layout.dimension import Dimension
     from prompt_toolkit.layout.menus import CompletionsMenu
     from prompt_toolkit.patch_stdout import patch_stdout
     from prompt_toolkit.styles import Style
@@ -231,6 +231,7 @@ _DASHBOARD_COMMANDS: list[tuple[str, str]] = [
     ("/pause", "ask the agent to pause after the current step"),
     ("/resume", "resume after /pause"),
     ("/report", "show session/report artifact paths"),
+    ("/export", "export session to HTML, or .jsonl when path ends with .jsonl"),
     ("/abort", "abort the run"),
     ("/quit", "abort the run"),
 ]
@@ -1153,6 +1154,37 @@ class RunDashboard:
             ]
             self._print_command_output("artifacts", rows)
             return
+        if cmd == "/export":
+            payload = line[len("/export"):].strip()
+            if not self.state.session_dir:
+                self._print_command_output("export", ["[yellow]no session directory is available yet[/]"])
+                return
+            try:
+                parts = shlex.split(payload) if payload else []
+            except ValueError as exc:
+                self._print_command_output(
+                    "export",
+                    ["[yellow]usage: /export [path.html|path.jsonl][/]", f"[red]{escape(str(exc))}[/]"],
+                )
+                return
+            if len(parts) > 1:
+                self._print_command_output("export", ["[yellow]usage: /export [path.html|path.jsonl][/]"])
+                return
+            try:
+                from ..export import export_session
+                output = Path(parts[0]).expanduser() if parts else None
+                result = export_session(Path(self.state.session_dir), output)
+            except Exception as exc:
+                self._print_command_output("export", [f"[red]failed:[/] {escape(str(exc))}"])
+                return
+            self._print_command_output(
+                "export",
+                [
+                    f"[green]{escape(result.format.upper())} written[/]",
+                    f"[dim]{escape(str(result.path))}[/]",
+                ],
+            )
+            return
         if cmd == "/pause":
             self.state.paused = True
             self.state.push_control_message(
@@ -1218,7 +1250,7 @@ class RunDashboard:
                 return
             dashboard_commands = {
                 "/help", "/status", "/cost", "/tree", "/evidence", "/reply", "/chart",
-                "/branches", "/report", "/pause", "/resume", "/skill", "/abort", "/quit",
+                "/branches", "/report", "/export", "/pause", "/resume", "/skill", "/abort", "/quit",
             }
             if cmd in dashboard_commands:
                 self._handle_slash_command(line)
@@ -2264,44 +2296,86 @@ class RunDashboard:
 
     def _input_title(self) -> str:
         s = self.state
-        if s.pending_gate is not None:
-            if s.gate_discussion_busy:
-                return "input · gate · companion thinking"
-            return "input · gate"
-        if s.companion_busy:
-            return "input · ask · companion thinking"
-        if s.awaiting_reply:
-            return "input · research · queued"
-        if self._input_target == "research":
-            return "input · research"
-        return "input · ask"
+        return _compose_input_title(
+            pending_gate=s.pending_gate,
+            gate_discussion_busy=s.gate_discussion_busy,
+            companion_busy=s.companion_busy,
+            awaiting_reply=s.awaiting_reply,
+            input_target=self._input_target,
+        )
 
     def _input_status_hint(self) -> str:
         s = self.state
-        if s.pending_gate is not None and s.gate_discussion_busy:
-            return "[magenta]gate companion is preparing a reply...[/]"
-        if s.companion_busy:
-            return "[magenta]companion is preparing a reply...[/]"
-        if s.awaiting_reply:
-            return "[yellow]research agent will see your message at the next turn[/]"
-        return ""
+        return _compose_input_status_hint(
+            pending_gate=s.pending_gate,
+            gate_discussion_busy=s.gate_discussion_busy,
+            companion_busy=s.companion_busy,
+            awaiting_reply=s.awaiting_reply,
+        )
 
     def _line_mode_prompt(self, *, gate: bool) -> str:
-        status = self._input_status_hint()
-        if status:
-            # Markup is stripped here because this prompt is appended as styled
-            # plain text; the richer version is still shown in the subtitle.
-            if "companion" in status:
-                return "waiting for companion reply — you can still type another line and press Enter"
-            return "research message queued — you can keep typing or use /mode ask"
-        if gate:
-            return "line mode — type /approve, /skip, /edit <text>, or a question; Enter to send"
-        if self._input_target == "research":
-            return "line mode research — plain text affects the agent; Enter to send"
-        return "line mode ask — plain text asks companion; Enter to send"
+        return _compose_line_mode_prompt(
+            status=self._input_status_hint(),
+            gate=gate,
+            input_target=self._input_target,
+        )
 
 
 # ── helpers ────────────────────────────────────────────────────────
+
+
+def _compose_input_status_hint(
+    *,
+    pending_gate: object,
+    gate_discussion_busy: bool,
+    companion_busy: bool,
+    awaiting_reply: bool,
+) -> str:
+    """Transient status line shown above the input (pure)."""
+    if pending_gate is not None and gate_discussion_busy:
+        return "[magenta]gate companion is preparing a reply...[/]"
+    if companion_busy:
+        return "[magenta]companion is preparing a reply...[/]"
+    if awaiting_reply:
+        return "[yellow]research agent will see your message at the next turn[/]"
+    return ""
+
+
+def _compose_input_title(
+    *,
+    pending_gate: object,
+    gate_discussion_busy: bool,
+    companion_busy: bool,
+    awaiting_reply: bool,
+    input_target: str,
+) -> str:
+    """Title for the input panel reflecting the current input mode (pure)."""
+    if pending_gate is not None:
+        if gate_discussion_busy:
+            return "input · gate · companion thinking"
+        return "input · gate"
+    if companion_busy:
+        return "input · ask · companion thinking"
+    if awaiting_reply:
+        return "input · research · queued"
+    if input_target == "research":
+        return "input · research"
+    return "input · ask"
+
+
+def _compose_line_mode_prompt(*, status: str, gate: bool, input_target: str) -> str:
+    """Plain-text line-mode prompt (pure). ``status`` is the status hint, if any."""
+    if status:
+        # Markup is stripped here because this prompt is appended as styled
+        # plain text; the richer version is still shown in the subtitle.
+        if "companion" in status:
+            return "waiting for companion reply — you can still type another line and press Enter"
+        return "research message queued — you can keep typing or use /mode ask"
+    if gate:
+        return "line mode — type /approve, /skip, /edit <text>, or a question; Enter to send"
+    if input_target == "research":
+        return "line mode research — plain text affects the agent; Enter to send"
+    return "line mode ask — plain text asks companion; Enter to send"
 
 
 class _DashboardSlashCompleter(Completer):

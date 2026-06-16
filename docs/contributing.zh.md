@@ -19,26 +19,26 @@ arbor doctor
 
 ## 项目结构
 
-项目使用标准的 `src` 布局。可导入的 Python 包位于 `src/arbor/`：
+源码位于 `src/`，作为 `arbor` 包被导入：
 
 ```text
 src/
-└── arbor/
-    ├── cli/            # Typer CLI：命令、接入对话、仪表盘
-    ├── coordinator/    # 研究总监：想法树、编排器、工具
-    ├── core/           # 智能体循环、LLM provider、共享工具、配置
-    ├── executor/       # 运行单个实验的研究工程师
-    ├── events/         # 事件总线 + 订阅者（日志、统计）
-    ├── plugins/        # 领域插件（如 mle_kaggle.yaml）
-    ├── report/         # REPORT.md 生成
-    ├── search_agent/   # 文献/检索智能体
-    ├── skills/         # markdown 技能手册
-    └── webui/          # 只读浏览器监控
+├── cli/            # Typer CLI：命令、接入对话、仪表盘
+├── coordinator/    # 研究总监：想法树、编排器、工具
+├── core/           # 智能体循环、LLM provider、共享工具、配置
+├── executor/       # 运行单个实验的研究工程师
+├── events/         # 事件总线 + 订阅者（日志、统计）
+├── plugins/        # 领域插件（如 mle_kaggle.yaml）
+├── report/         # REPORT.md 生成
+├── search_agent/   # 文献/检索智能体
+├── skills/         # markdown 技能手册
+└── webui/          # 只读浏览器监控
 ```
 
 !!! note "打包细节"
-    `pyproject.toml` 会在 `src/` 下自动发现 setuptools 包，因此新增带
-    `__init__.py` 的 `arbor.*` 子包后会自动随 wheel 发布。
+    磁盘上的目录是 `src/`，但通过 `pyproject.toml` 里的 `package-dir` 映射，它以
+    `arbor` 的名字安装和导入。当你新增一个**子包**（一个带 `__init__.py` 的新目录）时，
+    把它加进 `pyproject.toml` 里显式的 `packages` 列表，这样它才会随 wheel 一起发布。
 
 ## 参与文档
 

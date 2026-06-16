@@ -20,28 +20,27 @@ arbor doctor
 
 ## Project layout
 
-The project uses the standard `src` layout. The importable package lives at
-`src/arbor/`:
+The source lives in `src/` and is imported as the `arbor` package:
 
 ```text
 src/
-└── arbor/
-    ├── cli/            # Typer CLI: commands, intake chat, dashboard
-    ├── coordinator/    # the research director: idea tree, orchestrator, tools
-    ├── core/           # agent loop, LLM providers, shared tools, config
-    ├── executor/       # the research engineer that runs one experiment
-    ├── events/         # event bus + subscribers (logging, stats)
-    ├── plugins/        # domain plugins (e.g. mle_kaggle.yaml)
-    ├── report/         # REPORT.md generation
-    ├── search_agent/   # literature/search agent
-    ├── skills/         # markdown skill playbooks
-    └── webui/          # read-only browser monitor
+├── cli/            # Typer CLI: commands, intake chat, dashboard
+├── coordinator/    # the research director: idea tree, orchestrator, tools
+├── core/           # agent loop, LLM providers, shared tools, config
+├── executor/       # the research engineer that runs one experiment
+├── events/         # event bus + subscribers (logging, stats)
+├── plugins/        # domain plugins (e.g. mle_kaggle.yaml)
+├── report/         # REPORT.md generation
+├── search_agent/   # literature/search agent
+├── skills/         # markdown skill playbooks
+└── webui/          # read-only browser monitor
 ```
 
 !!! note "Packaging detail"
-    `pyproject.toml` uses setuptools package discovery under `src/`, so new
-    `arbor.*` subpackages are included automatically when they contain an
-    `__init__.py`.
+    The on-disk directory is `src/`, but it is installed and imported as `arbor`
+    via a `package-dir` mapping in `pyproject.toml`. When you add a **new sub-package**
+    (a new directory with an `__init__.py`), add it to the explicit `packages` list in
+    `pyproject.toml` so it ships in the wheel.
 
 ## Working on the docs
 

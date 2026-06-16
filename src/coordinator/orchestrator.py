@@ -9,15 +9,15 @@ memory across context compressions.
 from __future__ import annotations
 
 import asyncio
+import copy
 import hashlib
 import json
 import logging
 import os
 import subprocess
-import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ..core import Agent, AgentConfig
 from ..core.llm.base import LLMProvider
@@ -37,8 +37,12 @@ from .context_prune import prune_ideate_context
 from .idea_tree import IdeaTree, Node
 from .prompts import build_coordinator_system_prompt
 from .tools import get_coordinator_tools
-from .tools.executor_run import _compute_branch_name, _completed_cycles
+from .tools.executor_run import _completed_cycles
 from .tools.tree_ops import TreeAddNodeTool
+from .tools.worktree import _compute_branch_name
+
+if TYPE_CHECKING:
+    from ..events import EventBus, NullBus
 
 log = logging.getLogger(__name__)
 
@@ -46,9 +50,31 @@ log = logging.getLogger(__name__)
 def _source_tree_root() -> Path | None:
     """Return the repository root when running from an editable source tree."""
     for parent in Path(__file__).resolve().parents:
-        if (parent / "pyproject.toml").is_file() and (parent / "src" / "arbor").is_dir():
+        if (parent / "pyproject.toml").is_file() and (parent / "src" / "__init__.py").is_file():
             return parent
     return None
+
+
+def _resume_pending_user_note(pending_user: dict[str, Any] | None) -> str:
+    """Resume-prompt section reminding the agent it was paused awaiting a human
+    answer, if it was (mirrors the checkpoint's ``pending_user`` / AWAIT_USER
+    payload). Empty string when nothing was pending.
+    """
+    if not pending_user:
+        return ""
+    question = str(pending_user.get("prompt") or "").strip()
+    if not question:
+        return ""
+    node_id = str(pending_user.get("node_id") or "").strip()
+    scope = f" (about node {node_id})" if node_id else ""
+    quoted = question.replace("\n", "\n> ")  # keep every line inside the blockquote
+    return (
+        "## Pending question to the user\n\n"
+        f"When the run was interrupted you were waiting for the user's answer{scope} to:\n"
+        f"> {quoted}\n\n"
+        "Their answer was not received. If you still need it, ask again with "
+        "AskUser before proceeding; otherwise continue."
+    )
 
 
 def _git_output(cwd: str, *args: str) -> str | None:
@@ -315,6 +341,10 @@ class CoordinatorOrchestrator:
             if replayed:
                 agent.messages.extend(seal_interrupted_tail(replayed))
                 self._append_resume_nudge(agent, self._build_resume_prompt())
+                # The pending question is now in the replayed message history;
+                # drop the live copy so it isn't re-persisted and re-surfaced on
+                # every subsequent resume (a ghost question that never clears).
+                self._pending_user = None
                 resumed = True
                 _print_status(
                     f"Resumed {len(replayed)} prior message(s) from checkpoint."
@@ -545,6 +575,17 @@ class CoordinatorOrchestrator:
         # system prefix hash is recorded in the checkpoint.
         self._system_hash = hashlib.sha256(system_prompt.encode("utf-8")).hexdigest()
 
+        # On resume, if the coordinator's system prefix changed since the
+        # checkpoint (different model/plugin/config), the provider's KV cache is
+        # cold — note it so a slower, costlier first turn isn't a surprise.
+        if self._resume_checkpoint is not None:
+            prior_hash = self._resume_checkpoint.cache.stable_system_hash
+            if prior_hash and prior_hash != self._system_hash:
+                _print_status(
+                    "  Note: coordinator system prompt changed since the checkpoint "
+                    "— prompt cache will be cold for the first resumed turn."
+                )
+
         # Share the coordinator config's llm/timeout/context subgroups; override only
         # the coordinator's own model (effective_meta_model) and runtime knobs.
         agent_config = AgentConfig(
@@ -639,6 +680,9 @@ class CoordinatorOrchestrator:
             "Call TreeView to refresh your view, then continue the iterative "
             "research loop from where you left off."
         )
+        pending_note = _resume_pending_user_note(self._pending_user)
+        if pending_note:
+            parts.append(pending_note)
         parts.extend(self._eval_info_parts("Evaluation Info (from previous session)"))
         return "\n\n".join(parts)
 
@@ -776,6 +820,16 @@ class CoordinatorOrchestrator:
                     f"({type(exc).__name__}) — resuming without it"
                 )
                 self._resume_checkpoint = None
+
+            # Restore a suspended human-in-the-loop question so the resumed run
+            # knows it was paused mid-question (surfaced in the resume prompt).
+            if self._resume_checkpoint is not None:
+                pending = self._resume_checkpoint.pending_user
+                self._pending_user = copy.deepcopy(pending) if pending else None
+                if self._pending_user:
+                    _print_status(
+                        "  Restored a pending user question from the checkpoint"
+                    )
             return
 
         if json_path.exists():
@@ -878,7 +932,6 @@ class CoordinatorOrchestrator:
 
     def _on_await_user(self, event: Any) -> None:
         """Record the live ask-back so a checkpoint can capture it (#10 → #1)."""
-        import copy
         self._pending_user = copy.deepcopy(dict(getattr(event, "data", None) or {}))
 
     def _on_user_reply(self, event: Any) -> None:

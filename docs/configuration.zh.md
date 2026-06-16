@@ -15,14 +15,13 @@
 
 === "只是试试"
 
-    先运行 `arbor demo`；它不需要 API key。然后运行 `arbor setup` 选一个 model，再用 `arbor`
-    开始。你**不**需要配置文件或任何参数。若有兴趣，可阅读[最重要的几项设置](#the-settings-that-matter-most)，其余忽略即可。
+    运行 `arbor setup` 选一个 model，然后 `arbor` 开始。你**不**需要配置文件或任何参数。若有兴趣，可
+    阅读[最重要的几项设置](#the-settings-that-matter-most)，其余忽略即可。
 
 === "做一项真实研究"
 
     先 `arbor setup`，然后浏览[你能配置什么](#what-you-can-configure)和[设一个预算](#budgets-and-timeouts)。
-    可用 `arbor cost --model <model> --preset standard` 做粗略估算。一个 `--max-cycles`
-    参数加上合适的 model，通常就够了。
+    一个 `--max-cycles` 参数加上合适的 model，通常就够了。
 
 === "反复跑同一个基准"
 
@@ -53,11 +52,6 @@
 - **`interaction_mode`** —— 你是旁观（`auto`）还是批准每个想法（`review`）。
 
 其余一切都有合理的默认值。
-
-粗略价格规划可运行 `arbor cost --list-models`，用
-`arbor cost --model <model> --preset smoke|standard|deep` 估算通用运行形态，或用
-`arbor cost --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset smoke|pilot|full`
-直接估算内置 magnonics 运行。
 
 ## 怎么设——从命令行
 
@@ -141,14 +135,13 @@ arbor config init --provider litellm --model qwen-72b \
     llm:
       provider: litellm
       model: deepseek-chat
-      api_key: ${DEEPSEEK_API_KEY}
-      base_url: https://api.deepseek.com
+      api_key: ${OPENAI_API_KEY}   # 本地网关通常接受任意 dummy 值
+      base_url: https://your-gateway/v1
     ```
 
 !!! tip "别把 key 放进文件"
-    优先用环境变量（`${ANTHROPIC_API_KEY}`、`${OPENAI_API_KEY}` 或
-    `${DEEPSEEK_API_KEY}`），而非把密钥粘进文件。`arbor setup` 会把你的全局 key 连同其余配置一起存在
-    `~/.arbor/` 下。
+    优先用环境变量（`${ANTHROPIC_API_KEY}`），而非把密钥粘进文件。`arbor setup` 会把你的全局 key
+    连同其余配置一起存在 `~/.arbor/` 下。
 
 ### 3. 按项目：一个配置文件 { #3-per-project-a-config-file }
 

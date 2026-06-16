@@ -9,25 +9,8 @@
 
 ## Install
 
-Fast path from a fresh clone:
-
 ```bash
-git clone https://github.com/RUC-NLPIR/Arbor.git
-cd Arbor
-./scripts/install.sh
-source .venv/bin/activate
-arbor demo
-```
-
-The installer checks Python/Git, creates `.venv`, installs Arbor in editable mode, runs
-`arbor doctor`, and prints the next commands.
-
-Manual install:
-
-```bash
-git clone https://github.com/RUC-NLPIR/Arbor.git
-cd Arbor
-pip install -e .          # or: uv pip install -e .
+pip install arbor-agent          # or: uv pip install arbor-agent
 ```
 
 That single command installs Arbor and the `arbor` command into your current Python
@@ -38,7 +21,7 @@ environment. We recommend a virtual environment so it stays isolated:
     ```bash
     python -m venv .venv
     source .venv/bin/activate        # Windows: .venv\Scripts\activate
-    pip install -e .
+    pip install arbor-agent
     ```
 
 === "uv"
@@ -46,26 +29,36 @@ environment. We recommend a virtual environment so it stays isolated:
     ```bash
     uv venv
     source .venv/bin/activate
-    uv pip install -e .
+    uv pip install arbor-agent
     ```
 
+!!! tip "Upgrading"
+    Pull the latest release with `pip install -U arbor-agent`.
+
+## Install from source (development)
+
+To hack on Arbor itself, install it editable from a clone:
+
+```bash
+git clone https://github.com/RUC-NLPIR/Arbor.git
+cd Arbor
+pip install -e .          # or: uv pip install -e .
+```
+
 !!! info "Why editable (`-e`)?"
-    Arbor is research software under active development. An editable install lets you
-    pull updates with `git pull` without reinstalling.
+    An editable install lets you pull updates with `git pull` without reinstalling —
+    ideal when you're modifying Arbor's own source.
 
 ## Verify
 
 ```bash
 arbor version
 arbor doctor      # checks PATH, venv leakage, git, and API keys
-arbor demo        # offline dashboard/WebUI smoke test; no API key needed
-arbor cost --list-models
 ```
 
 `arbor doctor` is the fastest way to catch a broken setup — it reports which `arbor` your
 shell resolves, which Python it runs on, whether `git` is available, and whether your
-user config exists. If credentials are missing, install checks can pass while the summary
-still says setup is needed; run `arbor setup` when you are ready for model-backed runs.
+user config exists.
 
 ## Optional: a global `arbor` command with pipx
 
@@ -74,8 +67,8 @@ install it with [pipx](https://pipx.pypa.io) — it manages the isolated environ
 you:
 
 ```bash
-pipx install -e .                 # run from the cloned Arbor directory
-pipx reinstall arbor     # upgrade later
+pipx install arbor-agent          # install globally
+pipx upgrade arbor-agent          # upgrade later
 ```
 
 ## Troubleshooting
@@ -84,10 +77,6 @@ pipx reinstall arbor     # upgrade later
     The package was installed into an environment that isn't active or on your `PATH`.
     Activate the right virtual environment, or use the pipx install above. Run
     `arbor doctor` for a diagnosis.
-
-!!! tip "NixOS / shell.nix"
-    This repository includes `shell.nix` for development. If a console script lands
-    outside `PATH`, `python -m arbor.cli.app ...` uses the same CLI entry point.
 
 ## Next steps
 

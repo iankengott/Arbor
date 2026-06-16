@@ -8,10 +8,10 @@
 
 <p align="center">
   <a href="https://arxiv.org/pdf/2606.11926"><img src="https://img.shields.io/badge/Paper-arXiv-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white" alt="Paper"></a>
-  <a href="https://github.com/iankengott/Arbor"><img src="https://img.shields.io/badge/Fork-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub fork"></a>
-  <a href="https://github.com/RUC-NLPIR/Arbor"><img src="https://img.shields.io/badge/Upstream-RUC--NLPIR-555555?style=for-the-badge&logo=github&logoColor=white" alt="Upstream GitHub"></a>
+  <a href="https://github.com/RUC-NLPIR/Arbor"><img src="https://img.shields.io/badge/Code-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/"><img src="https://img.shields.io/badge/Project_Page-Live-0E9B9B?style=for-the-badge&logo=githubpages&logoColor=white" alt="Project Page"></a>
   <a href="https://RUC-NLPIR.github.io/Arbor/docs/"><img src="https://img.shields.io/badge/Docs-Material-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white" alt="Docs"></a>
+  <a href="https://github.com/RUC-NLPIR/Arbor/discussions"><img src="https://img.shields.io/badge/Discussions-Join-5865F2?style=for-the-badge&logo=github&logoColor=white" alt="Discussions"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white" alt="License: Apache 2.0"></a>
 </p>
 
@@ -31,13 +31,6 @@ and read the [paper](https://arxiv.org/pdf/2606.11926). For a more detailed usag
 see our [documentation](https://RUC-NLPIR.github.io/Arbor/docs/). 🧭 You can also
 choose the [CLI or Skill version](#-cli-and-skill-versions) depending on your
 environment and workflow.
-
-> **Fork note:** This public fork tracks the upstream
-> [`RUC-NLPIR/Arbor`](https://github.com/RUC-NLPIR/Arbor) project and adds a
-> standard `src/arbor` package layout, regression smoke tests, an updated Vite
-> project-page toolchain with a clean audit, and a Nix-based simulation starter
-> project under [`simulation_project/`](simulation_project/). The research paper,
-> project page, and hosted docs remain the upstream Arbor references.
 
 ## 💡 Why Arbor
 
@@ -124,7 +117,7 @@ skill suite. After installation, invoke `$arbor-research-agent` in Codex or
 you would in Arbor. The skill suite performs Arbor-style clarification first
 when target, metric, data, permissions, budget, or run mode are unclear, then
 loads the orchestrator and phase skills. This is separate from the internal
-runtime skills stored under `src/arbor/skills/`.
+runtime skills stored under `src/skills/`.
 
 ---
 
@@ -132,34 +125,29 @@ runtime skills stored under `src/arbor/skills/`.
 
 **Requirements:** Python ≥ 3.10 and Git. A virtual environment is recommended.
 
-Fast path:
-
 ```bash
-git clone https://github.com/iankengott/Arbor.git
-cd Arbor
-./scripts/install.sh
-source .venv/bin/activate
-arbor demo
+pip install arbor-agent   # or: uv pip install arbor-agent
+arbor doctor              # verify PATH, git, API keys
+arbor demo                # offline confidence check; no API key needed
 ```
 
-Manual path:
+> Prefer a global command? `pipx install arbor-agent` makes `arbor` available everywhere.
+
+<details>
+<summary>Install from source (for development)</summary>
 
 ```bash
-git clone https://github.com/iankengott/Arbor.git
+git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
 python -m venv .venv && source .venv/bin/activate   # recommended
 pip install -e .                                    # or: uv pip install -e .
-arbor doctor                                        # verify PATH, git, setup state
+arbor doctor
 ```
 
-> Prefer a global command? `pipx install -e .` makes `arbor` available everywhere.
-> For the docs site, `pip install -e ".[docs]" && mkdocs serve`, or read them online
-> via the **Docs** badge above.
+For the docs site, `pip install -e ".[docs]" && mkdocs serve`, or read them online
+via the **Docs** badge above.
 
-> **Disk-space warning:** Arbor can create multiple worktrees, logs, and experiment
-> artifacts during long runs. If this project directory grows past **100 GB**,
-> pause and clean up old worktrees, checkpoints, caches, or run artifacts before
-> starting more experiments. Check size with `du -sh .` from the repo root.
+</details>
 
 ---
 
@@ -167,7 +155,6 @@ arbor doctor                                        # verify PATH, git, setup st
 
 ```bash
 arbor demo        # offline confidence check; no API key needed
-arbor demo --benchmark magnonics
 arbor cost --model claude-sonnet-4-6 --preset standard
 arbor setup       # one-time: configure provider / model / base_url / API key
 arbor init        # optional: create arbor.yaml in your target project
@@ -187,16 +174,8 @@ cd examples/hello_benchmark
 arbor init --run-baseline
 ```
 
-Want a domain-shaped example? The bundled magnonics benchmark includes a full
-evaluator, reference dispersion data, editable material parameters, and an
-`outputs/metrics.json` contract with `score`, `physics_score`,
-`plausibility_score`, `plausibility_failures`, supporting `evidence`, evidence
-gates for "promising" claims, P1 magnonics checks for FMR, material family,
-temperature, and fabrication assumptions, P2 local literature/database hooks,
-failure memory, simulator abstraction, staged pre-screening, plus ranked
-candidate report outputs with lab intake, human review gates, and an
-Arena-lab-inspired thin-film spin-dynamics scenario that is explicitly not an
-exact lab model:
+Want a domain-shaped evaluator? The bundled magnonics benchmark includes reference
+dispersion data, editable material parameters, and a full evaluator:
 
 ```bash
 arbor demo --benchmark magnonics --no-webui --rounds 1
@@ -211,8 +190,6 @@ arbor cost --model claude-sonnet-4-6 --preset standard
 arbor cost --model local-gateway --input-price 0.20 --output-price 0.80
 arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset pilot
 ```
-
-The AI handoff and magnonics/lab-roadmap live in [`AI_README.md`](AI_README.md).
 
 ```bash
 # Point at a benchmark directory and a config
@@ -257,6 +234,27 @@ executor:
 
 A copy-pasteable example with every option lives in
 [`examples/research_config.example.yaml`](examples/research_config.example.yaml).
+
+### Try the runnable example task
+
+If you just want to watch Arbor work end-to-end — **no API budget, no GPU** —
+[`examples/algotune_knn/`](examples/algotune_knn) is a tiny, self-contained
+benchmark modeled on [AlgoTune](https://algotune.io/). The task is to make a
+brute-force k-nearest-neighbours solver **faster** while producing the **same**
+output; the metric is the speedup over a reference implementation. It is pure
+NumPy, CPU-only, sub-second, and deterministic, with several genuine
+optimizations for the Idea Tree to discover.
+
+```bash
+cp -r examples/algotune_knn /tmp/algotune_knn   # run outside the Arbor checkout
+cd /tmp/algotune_knn
+git init -q && git add -A && git commit -qm baseline
+arbor
+```
+
+In one 6-cycle run this drove the dev speedup from **1.01x → 7.77x** (held-out
+test **1.00x → 7.22x**). See [`examples/algotune_knn/README.md`](examples/algotune_knn/README.md)
+for the research contract and tuning knobs.
 
 ---
 
@@ -349,6 +347,7 @@ Day to day you only need `arbor`:
 | `arbor` | Start an interactive research session. |
 | `arbor setup` | Configure provider / model / keys → `~/.arbor/config.yaml`. |
 | `arbor report <session>` | Re-render `REPORT.md` for a past session. |
+| `arbor export <session> [output]` | Export a past session to self-contained HTML, or JSONL when `output` ends in `.jsonl`. |
 | `arbor doctor` | Diagnose install, PATH, git, and API keys. |
 | `arbor version` | Print the installed version. |
 
@@ -382,6 +381,8 @@ picks up where it left off.
 
 ```bash
 arbor report .arbor/sessions/<run_name>   # re-render a past report
+arbor export <run_name>                   # write .arbor/sessions/<run_name>/arbor-session-<run_name>.html
+arbor export <run_name> session.jsonl     # export a JSONL artifact bundle
 arbor --resume --run-name <run_name>      # continue an interrupted run
 ```
 
@@ -411,23 +412,22 @@ for full protocols and ablations.
 
 ## 🗂️ Project Structure
 
-The Python package uses the standard `src` layout and is imported as `arbor`.
+The code lives in `src/` and is imported as the `arbor` package.
 
 ```
-src/
-└── arbor/           # the importable Python package
-    ├── core/        Shared infrastructure: ReAct loop, tools, LLM providers, context mgmt
-    ├── executor/    Executor agent + `executor` CLI
-    ├── coordinator/ Coordinator agent, Idea Tree, orchestrator, coordinator tools
-    ├── cli/         `arbor` CLI: intake, live dashboard, setup, doctor, config
-    ├── events/      Typed event bus and payloads
-    ├── report/      Report generation
-    ├── webui/       Read-only run-monitoring web server
-    ├── plugins/     Domain plugins (e.g. mle_kaggle.yaml)
-    ├── skills/      On-demand markdown playbooks
-    ├── dashboard.py HTML dashboard generator
-    ├── run.py       `run-research` CLI
-    └── review.py    `review-research` CLI
+src/                 # the `arbor` package
+├── core/            Shared infrastructure: ReAct loop, tools, LLM providers, context mgmt
+├── executor/        Executor agent + `executor` CLI
+├── coordinator/     Coordinator agent, Idea Tree, orchestrator, coordinator tools
+├── cli/             `arbor` CLI: intake, live dashboard, setup, doctor, config
+├── events/          Typed event bus and payloads
+├── report/          Report generation
+├── webui/           Read-only run-monitoring web server
+├── plugins/         Domain plugins (e.g. mle_kaggle.yaml)
+├── skills/          On-demand markdown playbooks
+├── dashboard.py     HTML dashboard generator
+├── run.py           `run-research` CLI
+└── review.py        `review-research` CLI
 ```
 
 ---

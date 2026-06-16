@@ -18,13 +18,13 @@ hide:
 
 -   :material-rocket-launch: **几分钟内跑起来**
 
-    克隆、安装、运行 `arbor demo`，然后配置 provider。
+    `pip install arbor-agent`、`arbor demo`、`arbor setup`，然后 `arbor`。
 
     [:octicons-arrow-right-24: 安装](installation.md)
 
 -   :material-flask: **运行你的第一个研究**
 
-    先试 magnonics 演示，或把 Arbor 指向你自己的基准。
+    先试一个内置演示，或把 Arbor 指向一个基准，看着想法树生长。
 
     [:octicons-arrow-right-24: 快速上手](quickstart.md)
 

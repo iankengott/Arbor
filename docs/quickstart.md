@@ -19,16 +19,6 @@ For a domain-shaped evaluator, run the magnonics benchmark demo:
 arbor demo --benchmark magnonics --no-webui --rounds 1
 ```
 
-That benchmark lives under `examples/magnonics_benchmark/` and includes reference
-dispersion data, editable candidate material parameters, an evaluator script, and
-`outputs/metrics.json` with a lab-relevant `score`, physical/logical
-`physics_score`, lab-default `plausibility_score`, `plausibility_failures`,
-supporting `evidence`, evidence gates for "promising" claims, FMR/material
-family/temperature/fabrication checks, local literature/database hooks, failure
-memory, simulator abstraction, staged pre-screening, and ranked candidate report
-outputs with lab intake, human review gates, and an Arena-lab-inspired
-thin-film spin-dynamics scenario that is explicitly not an exact lab model.
-
 You can also test project initialization on the tiny example benchmark:
 
 ```bash

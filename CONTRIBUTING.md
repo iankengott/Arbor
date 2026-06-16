@@ -9,9 +9,9 @@ environment, the conventions we follow, and how to get a change merged.
 
 ## Ways to contribute
 
+- **Share an idea or ask a question** — start a [Discussion](https://github.com/RUC-NLPIR/Arbor/discussions). Open-ended ideas, feature wishes (upvotable), usage Q&A, and "look what I built" all belong here.
 - **Report a bug** — open a [Bug report](https://github.com/RUC-NLPIR/Arbor/issues/new?template=bug_report.yml).
-- **Request a feature** — open a [Feature request](https://github.com/RUC-NLPIR/Arbor/issues/new?template=feature_request.yml).
-- **Have a usage question?** — check the [docs](https://RUC-NLPIR.github.io/Arbor/) first; if you're still stuck, open an issue.
+- **Request a feature** — once an idea is concrete and actionable, open a [Feature request](https://github.com/RUC-NLPIR/Arbor/issues/new?template=feature_request.yml).
 - **Send a pull request** — see below.
 
 For anything larger than a small fix, please open an issue first so we can agree on
@@ -79,9 +79,9 @@ By contributing, you agree that your contributions are licensed under the projec
 
 ### 贡献方式
 
+- **分享想法或提问** —— 来[讨论区（Discussions）](https://github.com/RUC-NLPIR/Arbor/discussions)发帖。开放式想法、功能许愿（可点赞投票）、使用问答、晒成果都欢迎放这里。
 - **报告缺陷** —— 提交 [Bug report](https://github.com/RUC-NLPIR/Arbor/issues/new?template=bug_report.yml)。
-- **请求功能** —— 提交 [Feature request](https://github.com/RUC-NLPIR/Arbor/issues/new?template=feature_request.yml)。
-- **使用类问题** —— 请先查阅[文档](https://RUC-NLPIR.github.io/Arbor/)；若仍未解决，再提一个 issue。
+- **请求功能** —— 当想法已足够具体、可执行时，提交 [Feature request](https://github.com/RUC-NLPIR/Arbor/issues/new?template=feature_request.yml)。
 - **提交 PR** —— 见下文。
 
 对于比小修复更大的改动，请先开一个 issue 讨论方案，再动手实现，以免白做。

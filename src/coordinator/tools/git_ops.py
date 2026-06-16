@@ -21,6 +21,21 @@ if TYPE_CHECKING:
     from ..idea_tree import IdeaTree
     from ...core.llm.base import LLMProvider
 
+
+def _user_token() -> str:
+    """Per-user suffix for temp worktree dirs, safe where os.getuid() is absent.
+
+    Uses the numeric uid on POSIX, falls back to a sanitized login name on
+    platforms (e.g. Windows) without os.getuid(), and never raises.
+    """
+    import getpass
+
+    try:
+        raw = str(os.getuid()) if hasattr(os, "getuid") else getpass.getuser()
+    except Exception:
+        raw = "user"
+    return re.sub(r"[^A-Za-z0-9_.-]", "_", raw) or "user"
+
 log = logging.getLogger(__name__)
 
 # Branches that must never be a merge target.
@@ -127,7 +142,7 @@ async def _run_eval_in_worktree(
     """
     import tempfile
 
-    worktree_base = Path(tempfile.gettempdir()) / f"merge-eval-worktrees-{os.getuid()}"
+    worktree_base = Path(tempfile.gettempdir()) / f"merge-eval-worktrees-{_user_token()}"
     worktree_base.mkdir(parents=True, exist_ok=True)
 
     dir_name = source_branch.replace("/", "__").replace(".", "_")

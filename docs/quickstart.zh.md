@@ -4,41 +4,35 @@
 
 ## 1. 离线验证安装
 
-在使用 API key 或把 Arbor 指向真实项目之前，先运行内置演示：
+在使用 API key 或把 Arbor 指向真实项目前，先运行内置演示：
 
 ```bash
 arbor demo
 ```
 
-它会用真实终端仪表盘、EventBus 和可选 WebUI 回放一次模拟研究运行。它只是信心检查：不调用模型、不修改文件、没有成本。
+这会通过真实的终端仪表盘、EventBus 和可选 WebUI 回放一次模拟研究运行；它只是信心检查，不会调用模型、修改项目或产生费用。
 
-若要运行一个带领域评估器的示例，可以使用 magnonics 基准：
+也可以运行 magnonics 示例评估器：
 
 ```bash
 arbor demo --benchmark magnonics --no-webui --rounds 1
 ```
 
-该基准位于 `examples/magnonics_benchmark/`，包含参考色散数据、可编辑候选材料参数、评估脚本、
-`outputs/metrics.json`、物理/逻辑可信度检查、证据门控、实验室 intake、人审 gate，以及一个
-Arena-lab-inspired 的薄膜自旋动力学场景。该场景明确不是任何实验室、仪器、配方或数据集的精确模型。
-
-你也可以在玩具基准上测试项目初始化：
+若要在小型示例项目上测试配置生成：
 
 ```bash
 cd examples/hello_benchmark
 arbor init --run-baseline
 ```
 
-`arbor init` 会生成 starter `arbor.yaml`，检测 `eval.py` / `eval.sh` 等常见评估脚本，建议受保护路径，并可运行一次基线以确认能看到类似 `score: 0.8123` 的指标。
-
-开始前还可以粗略估算模型预算：
+你还可以先估算模型预算：
 
 ```bash
 arbor cost --model claude-sonnet-4-6 --preset standard
 arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset pilot
 ```
 
-成本估算适合粗略预算，不是精确账单。真实花费取决于实际轮次、上下文增长、重试、输出长度、缓存命中、provider 路由和当前价格。
+成本估算只适合粗略规划，不等同于最终账单。
 
 ## 2. 配置一个 provider
 

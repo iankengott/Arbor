@@ -4,10 +4,6 @@ Dark, cinematic project page for **Arbor: Toward Generalist Autonomous Research 
 Hypothesis-Tree Refinement**. Built with Vite + React, with animated UI sourced from
 [react-bits](https://www.reactbits.dev/).
 
-This README covers only the Vite/React project page. For Arbor CLI onboarding,
-demo commands, cost estimation, and the magnonics/lab roadmap, see
-[`../README.md`](../README.md) and [`../AI_README.md`](../AI_README.md).
-
 ## Develop
 
 ```bash
