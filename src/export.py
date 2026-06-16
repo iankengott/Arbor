@@ -303,7 +303,25 @@ def _first_existing(*paths: Path) -> Path:
     return paths[0]
 
 
-def _read_text(path: Path) -> str:
+#: Cap per-artifact text so one giant log (multi-day runs produce 100 MB+
+#: ``full_output.log`` files) can't blow up memory or produce an unopenable
+#: HTML. The tail is kept — the most recent output is what matters on a log.
+_MAX_ARTIFACT_BYTES = 10 * 1024 * 1024  # 10 MiB
+
+
+def _read_text(path: Path, max_bytes: int = _MAX_ARTIFACT_BYTES) -> str:
+    try:
+        size = path.stat().st_size
+    except OSError:
+        size = 0
+    if size > max_bytes:
+        with open(path, "rb") as fh:
+            fh.seek(size - max_bytes)
+            raw = fh.read()
+        dropped = size - max_bytes
+        return f"[... truncated {dropped:,} earlier bytes ...]\n" + raw.decode(
+            "utf-8", errors="replace"
+        )
     try:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError:

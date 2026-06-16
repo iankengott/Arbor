@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 
-from arbor.export import export_session, resolve_session_dir
+from arbor.export import _read_text, export_session, resolve_session_dir
 
 
 def _write_sample_session(root: Path) -> Path:
@@ -149,3 +149,56 @@ def test_export_session_reads_legacy_root_idea_tree_layout(tmp_path: Path) -> No
     assert payload["summary"]["baseline_score"] == 1.0
     assert payload["summary"]["trunk_score"] == 2.0
     assert {f["relative_path"] for f in payload["files"]} == {"idea_tree.md", "idea_tree.json"}
+
+
+def test_export_html_escapes_xss_from_session_data(tmp_path: Path) -> None:
+    """Security regression: a session carries untrusted LLM/user text. None of it
+    may render as live HTML in the shared export — it must be escaped (templated
+    fields) or base64-wrapped (the data payload the browser renders via esc())."""
+    xss = '<script>alert("xss")</script><img src=x onerror="alert(1)">'
+    session_dir = tmp_path / "xss_run"
+    coord = session_dir / ".coordinator"
+    coord.mkdir(parents=True)
+    (session_dir / "run_info.json").write_text(
+        json.dumps({"run_name": "xss_run", "task": xss, "model": xss, "cwd": xss}),
+        encoding="utf-8",
+    )
+    (session_dir / "REPORT.md").write_text(f"# {xss}\n", encoding="utf-8")
+    (coord / "idea_tree.json").write_text(
+        json.dumps({
+            "root_id": "ROOT", "meta": {},
+            "nodes": {
+                "ROOT": {"id": "ROOT", "depth": 0, "children_ids": ["n1"]},
+                "n1": {"id": "n1", "depth": 1, "status": "done", "score": 0.5,
+                       "hypothesis": xss, "result": xss, "insight": xss},
+            },
+        }),
+        encoding="utf-8",
+    )
+
+    html = export_session(session_dir).path.read_text(encoding="utf-8")
+
+    # No executable form of the payload anywhere in the document.
+    assert "<script>alert(" not in html
+    assert '<img src=x onerror="' not in html
+    # The data still survives intact in the base64 payload (rendered via esc()).
+    assert _decode_export_payload(html)["summary"]["task"] == xss
+    # The directly-templated fields (model/cwd) appear HTML-escaped.
+    assert "&lt;script&gt;" in html
+
+
+def test_read_text_caps_large_files(tmp_path: Path) -> None:
+    """A huge artifact is tail-truncated, not slurped whole into the export."""
+    big = tmp_path / "big.log"
+    big.write_text("A" * 50 + "TAIL_MARKER", encoding="utf-8")  # 61 bytes
+    out = _read_text(big, max_bytes=20)
+    assert "truncated" in out
+    assert out.endswith("TAIL_MARKER")     # the tail (recent output) is kept
+    assert len(out) < 60
+
+
+def test_read_text_small_file_unchanged(tmp_path: Path) -> None:
+    small = tmp_path / "small.txt"
+    small.write_text("hello world", encoding="utf-8")
+    assert _read_text(small) == "hello world"
+
