@@ -100,17 +100,11 @@ def cost_command(
                 typer.secho(f"error: {exc}", fg=typer.colors.RED, err=True)
                 raise typer.Exit(code=2) from exc
             shape = dict(magnonics_plan.shape)
-            shape_label = (
-                f"{magnonics_plan.preset} magnonics plan: "
-                f"{shape['cycles']} cycles, {shape['executors_per_cycle']} executor(s)/cycle"
-            )
+            shape_name = f"{magnonics_plan.preset} magnonics plan"
             plan_notes = (f"magnonics config: {magnonics_config}",) + magnonics_plan.notes
         else:
             shape = dict(_PRESETS.get(preset, _PRESETS["standard"]))
-            shape_label = (
-                f"{preset if preset in _PRESETS else 'standard'} plan: "
-                f"{shape['cycles']} cycles, {shape['executors_per_cycle']} executor(s)/cycle"
-            )
+            shape_name = f"{preset if preset in _PRESETS else 'standard'} plan"
             plan_notes = ()
         overrides = {
             "cycles": cycles,
@@ -123,6 +117,10 @@ def cost_command(
         for key, value in overrides.items():
             if value is not None:
                 shape[key] = value
+        shape_label = (
+            f"{shape_name}: "
+            f"{shape['cycles']} cycles, {shape['executors_per_cycle']} executor(s)/cycle"
+        )
         tokens = estimate_tokens_from_plan(
             **shape,
             cache_read_ratio=cache_read_ratio,

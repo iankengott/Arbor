@@ -65,7 +65,7 @@ def demo_command(
 
 
 def _run_benchmark_demo(name: str) -> None:
-    repo_root = Path(__file__).resolve().parents[4]
+    repo_root = _repo_root()
     benchmarks = {
         "hello": (
             repo_root / "examples" / "hello_benchmark",
@@ -91,3 +91,10 @@ def _run_benchmark_demo(name: str) -> None:
     if name == "magnonics":
         typer.echo(f"metrics: {cwd / 'outputs' / 'metrics.json'}")
         typer.echo(f"scenario: {cwd / 'scenario' / 'arena_lab_inspired.yaml'}")
+
+
+def _repo_root() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "pyproject.toml").is_file() and (parent / "examples").is_dir():
+            return parent
+    return Path.cwd()

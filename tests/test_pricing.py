@@ -92,6 +92,29 @@ def test_cost_command_accepts_custom_prices() -> None:
     assert "local-model" in result.output
 
 
+def test_cost_command_shape_label_reflects_overrides() -> None:
+    result = CliRunner().invoke(
+        app,
+        [
+            "cost",
+            "--model",
+            "local-model",
+            "--input-price",
+            "1",
+            "--output-price",
+            "2",
+            "--cycles",
+            "1",
+            "--executors-per-cycle",
+            "3",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "shape: standard plan: 1 cycles, 3 executor(s)/cycle" in result.output
+    assert "shape: standard plan: 8 cycles" not in result.output
+
+
 def test_magnonics_cost_plan_reads_config_features() -> None:
     plan = load_magnonics_cost_plan(MAGNONICS_CONFIG, preset="pilot")
 
