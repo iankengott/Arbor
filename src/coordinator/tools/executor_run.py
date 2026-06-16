@@ -23,7 +23,7 @@ from ...core.tools.base import Tool
 from ...core.git_artifacts import filter_commit_paths
 from ..hitl import await_user_decision
 from .tree_ops import propagate_insights
-from .git_ops import _run_git
+from .git_ops import _run_git, _user_token
 
 if TYPE_CHECKING:
     from ..config import CoordinatorConfig
@@ -239,15 +239,7 @@ async def _create_worktree(cwd: str, branch_name: str, start_point: str | None =
     """
     import tempfile
 
-    import getpass
-    import re
-
-    try:
-        _raw = str(os.getuid()) if hasattr(os, "getuid") else getpass.getuser()
-    except Exception:
-        _raw = "user"
-    _uid = re.sub(r"[^A-Za-z0-9_.-]", "_", _raw) or "user"
-    worktree_base = Path(tempfile.gettempdir()) / f"coordinator-worktrees-{_uid}"
+    worktree_base = Path(tempfile.gettempdir()) / f"coordinator-worktrees-{_user_token()}"
     worktree_base.mkdir(parents=True, exist_ok=True)
 
     dir_name = _worktree_dir_name(branch_name)
