@@ -15,6 +15,9 @@ from arbor.cli.run_dashboard import (
     _GATE_H,
     _HEADER_H,
     _REPLY_MIN_H,
+    _compose_input_status_hint,
+    _compose_input_title,
+    _compose_line_mode_prompt,
     _fmt_tokens,
     _gate_command_value,
     _plan_section_sizes,
@@ -167,3 +170,49 @@ def test_gate_command_value_mappings() -> None:
 def test_spinner_returns_a_frame() -> None:
     from arbor.cli.run_dashboard import _SPINNER_FRAMES
     assert _spinner() in _SPINNER_FRAMES
+
+
+# ── input-mode string composers ──────────────────────────────────────
+
+def test_input_status_hint_priority() -> None:
+    # gate companion thinking takes precedence over everything
+    assert "gate companion" in _compose_input_status_hint(
+        pending_gate={}, gate_discussion_busy=True,
+        companion_busy=True, awaiting_reply=True,
+    )
+    assert "companion is preparing" in _compose_input_status_hint(
+        pending_gate=None, gate_discussion_busy=False,
+        companion_busy=True, awaiting_reply=True,
+    )
+    assert "next turn" in _compose_input_status_hint(
+        pending_gate=None, gate_discussion_busy=False,
+        companion_busy=False, awaiting_reply=True,
+    )
+    assert _compose_input_status_hint(
+        pending_gate=None, gate_discussion_busy=False,
+        companion_busy=False, awaiting_reply=False,
+    ) == ""
+
+
+def test_input_title_reflects_mode() -> None:
+    idle = dict(pending_gate=None, gate_discussion_busy=False,
+                companion_busy=False, awaiting_reply=False)
+    assert _compose_input_title(**idle, input_target="research") == "input · research"
+    assert _compose_input_title(**idle, input_target="ask") == "input · ask"
+    assert _compose_input_title(
+        pending_gate={}, gate_discussion_busy=True, companion_busy=False,
+        awaiting_reply=False, input_target="ask",
+    ) == "input · gate · companion thinking"
+
+
+def test_line_mode_prompt_variants() -> None:
+    assert "companion reply" in _compose_line_mode_prompt(
+        status="[magenta]companion is preparing a reply...[/]",
+        gate=False, input_target="ask",
+    )
+    assert _compose_line_mode_prompt(status="", gate=True, input_target="ask").startswith(
+        "line mode — type /approve"
+    )
+    assert "affects the agent" in _compose_line_mode_prompt(
+        status="", gate=False, input_target="research",
+    )
