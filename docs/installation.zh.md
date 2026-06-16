@@ -9,6 +9,20 @@
 
 ## 安装
 
+从全新 clone 开始的快速路径：
+
+```bash
+git clone https://github.com/RUC-NLPIR/Arbor.git
+cd Arbor
+./scripts/install.sh
+source .venv/bin/activate
+arbor demo
+```
+
+安装脚本会检查 Python/Git、创建 `.venv`、以可编辑模式安装 Arbor、运行 `arbor doctor`，并打印下一步命令。
+
+手动安装：
+
 ```bash
 git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
@@ -41,10 +55,12 @@ pip install -e .          # 或：uv pip install -e .
 ```bash
 arbor version
 arbor doctor      # 检查 PATH、venv 泄漏、git 与 API key
+arbor demo        # 离线仪表盘/WebUI smoke test；无需 API key
+arbor cost --list-models
 ```
 
 `arbor doctor` 是发现安装问题最快的方式——它会报告你的 shell 解析到哪个 `arbor`、跑在哪个
-Python 上、`git` 是否可用，以及用户配置是否存在。
+Python 上、`git` 是否可用，以及用户配置是否存在。如果缺少凭据，安装检查可以通过，但摘要会提示仍需运行 `arbor setup`。
 
 ## 可选：用 pipx 安装全局 `arbor` 命令
 
@@ -61,6 +77,10 @@ pipx reinstall arbor     # 之后升级
 !!! failure "`arbor: command not found`"
     该包被装进了一个未激活、或不在 `PATH` 上的环境。激活正确的虚拟环境，或改用上面的 pipx
     安装。运行 `arbor doctor` 做诊断。
+
+!!! tip "NixOS / shell.nix"
+    仓库包含用于开发的 `shell.nix`。如果 console script 被安装到 `PATH` 外，可以用
+    `python -m arbor.cli.app ...` 调用同一个 CLI 入口。
 
 ## 下一步
 

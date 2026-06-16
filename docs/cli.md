@@ -10,6 +10,9 @@ complete reference.
 | `arbor` | With no subcommand, behaves like `arbor run` — starts an interactive session in the current directory. |
 | `arbor run` | Start an AI-powered research session. |
 | `arbor setup` | Interactive wizard to write your provider, model, and API key. |
+| `arbor demo` | Replay an offline run through the dashboard/WebUI without API keys. |
+| `arbor init` | Create a starter `arbor.yaml` in a target project and optionally run its baseline. |
+| `arbor cost` | Estimate LLM spend from a planned run shape or existing events file. |
 | `arbor config` | Inspect and manage stored configuration. |
 | `arbor doctor` | Diagnose your environment (PATH, Python, git, API keys). |
 | `arbor report` | Work with a finished run's report. |
@@ -116,3 +119,30 @@ For advanced/low-level use, Arbor also installs:
 | `review-research` | Review a finished run. |
 
 Most users only need `arbor`.
+
+## Onboarding helpers
+
+```bash
+arbor demo
+arbor demo --benchmark magnonics --no-webui --rounds 1
+arbor init --cwd ./my_project --run-baseline
+arbor cost --model claude-sonnet-4-6 --preset standard
+```
+
+`arbor demo` is the fastest no-risk check after installation. `arbor init` is optional,
+but useful when you want a reusable project config before running intake; pass
+`--eval-cmd "bash eval.sh"` if your evaluation command is not one of the common names.
+
+`arbor cost` includes a small built-in pricing table for common OpenAI and Anthropic
+models plus custom prices for private gateways:
+
+```bash
+arbor cost --list-models
+arbor cost --model gpt-5 --preset smoke
+arbor cost --model local-gateway --input-price 0.20 --output-price 0.80
+arbor cost --model claude-sonnet-4-6 --usage-file .arbor/sessions/run/events.jsonl
+arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset full
+```
+
+The estimate is a planning tool, not a bill. It cannot know future retries, exact context
+growth, cache hit rate, output verbosity, provider-side routing, or price changes.

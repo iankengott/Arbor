@@ -1,0 +1,6 @@
+# Editable candidate parameters. Arbor should improve these.
+exchange_stiffness: 0.85
+anisotropy: 0.30
+dmi: 0.08
+damping: 0.045
+field: 0.18

@@ -1,0 +1,10 @@
+title: Arena-lab-inspired thin-film spin-dynamics screen
+caveat: Inspired by public nanomagnetism and thin-film spin-dynamics themes; not an exact model of any lab, instrument, recipe, dataset, or unpublished workflow.
+material_system: Sputtered Fe-Gd-like rare-earth/transition-metal ferrimagnetic alloy with Pt cap
+spin_dynamics_axes: damping, anisotropy, propagation_length, FMR_linewidth, temperature_dependence
+temperature_axis_C: 25,50,100
+candidate_loop: deposit_thin_film, AFM_roughness_check, hysteresis_or_MOKE, FMR_linewidth_vs_frequency, analytic_spin_wave_screen
+primary_success_signal: Lower Gilbert damping with measurable anisotropy and a useful propagation-length proxy across the configured temperature points
+failure_modes: roughness_or_discontinuous_cap, implausible_FMR_linewidth, temperature_degraded_propagation, unsupported_literature_or_database
+forbidden_claim: Do not claim this is an exact Arena Lab model or a replacement for measured thin-film characterization.
+human_review_focus: Verify deposition feasibility, magnetic ordering, FMR linewidth, and temperature trend before deeper simulation or candidate promotion.

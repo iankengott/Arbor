@@ -75,6 +75,33 @@ cd my_task
 arbor
 ```
 
+If you want a reusable starter config before launch, run:
+
+```bash
+arbor init --run-baseline
+```
+
+This detects common eval commands, writes `arbor.yaml`, suggests protected paths such as
+`data/`, and verifies that the baseline prints a parseable metric. You can edit the file
+afterward or skip it entirely and let intake collect the same information interactively.
+
+For a complete example with a domain-specific evaluator, inspect
+`examples/magnonics_benchmark/`. It models a synthetic magnonics dispersion task, keeps
+reference data separate from editable candidate parameters, and writes
+`outputs/metrics.json` for Arbor to score. The magnonics metrics include the
+lab-relevant `score`, the secondary `dispersion_score`, `physics_score`,
+`plausibility_score`, `plausibility_failures`, `evidence`, and evidence gates so
+the demo checks physical/logical plausibility instead of only numerical fit. It
+also includes P1-style FMR, material-family, temperature, and process/fabrication
+checks plus P2-style local literature/database hooks, failure memory, simulator
+abstraction, and staged pre-screening. It also includes P3-style lab intake,
+human review gates, a mock local literature corpus, and a report that separates
+evaluated evidence, literature/database support, model speculation, and next lab
+measurements. Its P4 polish adds config-derived `arbor cost` estimates for
+smoke/pilot/full magnonics runs and a scenario file,
+`scenario/arena_lab_inspired.yaml`, that frames the demo around thin-film
+spin-dynamics themes without claiming to model any lab exactly.
+
 In the **intake chat**, the agent inspects the repo (and your README, if any), states the
 metric, baseline, goal, and constraints it inferred, and asks you to confirm or correct
 them in one shot. Say "go" and it launches the study — proposing hypotheses, editing your

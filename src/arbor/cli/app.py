@@ -11,7 +11,10 @@ from .._app import APP_NAME, TAGLINE, TAGLINE_SUB
 from .commands.run import run_command
 from .commands.report_cmd import report_command
 from .commands.config_cmd import config_app
+from .commands.cost_cmd import cost_command
+from .commands.demo_cmd import demo_command
 from .commands.doctor_cmd import doctor_command
+from .commands.init_cmd import init_command
 from .commands.setup_cmd import setup_command
 
 
@@ -35,6 +38,9 @@ app.command("run")(run_command)
 app.command("report")(report_command)
 app.command("doctor")(doctor_command)
 app.command("setup")(setup_command)
+app.command("demo")(demo_command)
+app.command("init")(init_command)
+app.command("cost")(cost_command)
 app.add_typer(config_app, name="config")
 
 
@@ -49,7 +55,7 @@ def version_command() -> None:
     typer.echo(f"{APP_NAME} {ver}")
 
 
-_KNOWN_COMMANDS = {"run", "report", "config", "version", "doctor", "setup"}
+_KNOWN_COMMANDS = {"run", "report", "config", "version", "doctor", "setup", "demo", "init", "cost"}
 _ROOT_FLAGS = {"--help", "-h"}
 _VERSION_FLAGS = {"--version", "-V"}
 

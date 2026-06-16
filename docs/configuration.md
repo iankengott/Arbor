@@ -17,15 +17,16 @@ order:
 
 === "Just trying it out"
 
-    Run `arbor setup` to choose a model, then `arbor` to start. You do **not** need a
-    config file or any flags. Read [The settings that matter most](#the-settings-that-matter-most)
-    if you're curious, and ignore the rest.
+    Run `arbor demo` first; it needs no API key. Then run `arbor setup` to choose a
+    model and `arbor` to start. You do **not** need a config file or any flags. Read
+    [The settings that matter most](#the-settings-that-matter-most) if you're curious,
+    and ignore the rest.
 
 === "Running a real study"
 
     Do `arbor setup`, then skim [What you can configure](#what-you-can-configure) and
-    [Set a budget](#budgets-and-timeouts). A `--max-cycles` flag and the right model
-    are usually all you need.
+    [Set a budget](#budgets-and-timeouts). Use `arbor cost --model <model> --preset standard`
+    for a rough estimate. A `--max-cycles` flag and the right model are usually all you need.
 
 === "Repeating the same benchmark"
 
@@ -57,6 +58,10 @@ If you only ever touch three things, make them these:
 - **`interaction_mode`** — whether you watch (`auto`) or approve each idea (`review`).
 
 Everything else has a sensible default.
+
+For rough price planning, run `arbor cost --list-models`, estimate a generic run with
+`arbor cost --model <model> --preset smoke|standard|deep`, or estimate the bundled
+magnonics run directly with `arbor cost --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset smoke|pilot|full`.
 
 ## How to set it — from the command line
 
@@ -147,13 +152,14 @@ three:
     llm:
       provider: litellm
       model: deepseek-chat
-      api_key: ${OPENAI_API_KEY}   # local gateways often accept any dummy value
-      base_url: https://your-gateway/v1
+      api_key: ${DEEPSEEK_API_KEY}
+      base_url: https://api.deepseek.com
     ```
 
 !!! tip "Keep keys out of files"
-    Prefer an environment variable (`${ANTHROPIC_API_KEY}`) over pasting a secret into a
-    file. `arbor setup` stores your global key under `~/.arbor/` with the rest of the config.
+    Prefer an environment variable (`${ANTHROPIC_API_KEY}`, `${OPENAI_API_KEY}`, or
+    `${DEEPSEEK_API_KEY}`) over pasting a secret into a file. `arbor setup` stores your
+    global key under `~/.arbor/` with the rest of the config.
 
 ### 3. Per-project: a config file
 

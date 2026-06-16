@@ -78,12 +78,24 @@ https://github.com/user-attachments/assets/49c1a306-d2e9-49d6-9c83-65e38a62df30
 
 **环境要求：** Python ≥ 3.10 及 Git。推荐使用虚拟环境。
 
+快速路径：
+
+```bash
+git clone https://github.com/RUC-NLPIR/Arbor.git
+cd Arbor
+./scripts/install.sh
+source .venv/bin/activate
+arbor demo
+```
+
+手动路径：
+
 ```bash
 git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
 python -m venv .venv && source .venv/bin/activate   # 推荐
 pip install -e .                                    # 或使用：uv pip install -e .
-arbor doctor                                        # 验证 PATH、git 及 API 密钥
+arbor doctor                                        # 验证 PATH、git 及配置状态
 ```
 
 > 想要全局命令？使用 `pipx install -e .` 可将 `arbor` 命令安装至全局环境。 若需本地查看文档站点，运行 `pip install -e ".[docs]" && mkdocs serve`，或通过上方的 **Docs** 徽章在线阅读。
@@ -93,9 +105,12 @@ arbor doctor                                        # 验证 PATH、git 及 API 
 ## ⚡ 快速开始
 
 ```bash
+arbor demo        # 离线信心检查；无需 API key
+arbor demo --benchmark magnonics
+arbor cost --model claude-sonnet-4-6 --preset standard
 arbor setup       # 首次使用：配置模型提供商 / 模型 / base_url / API 密钥
+arbor init        # 可选：在目标项目中生成 arbor.yaml
 arbor             # 在当前目录启动交互式会话
-arbor doctor      # 诊断安装状态
 ```
 
 `arbor setup` 会将配置写入 `~/.arbor/config.yaml`，此后日常使用直接运行 `arbor` 即可，无需额外参数。Arbor 启动后首先进行一次**任务摄入对话**，将你的目标、目标目录、评估指标、基线、预算、开发/测试纪律和产物路径整理成一份简洁的 **Arbor 研究合同**。确认后，实时仪表盘随即接管。
@@ -112,6 +127,33 @@ arbor --cwd ./benchmark --config research_config.yaml --max-cycles 3
 ```
 
 运行过程中，你可以随时输入 `/status`、`/tree`、`/evidence`、`/branches`、`/cost`、`/pause`、`/resume`、`/report` 或 `/abort` 来查看状态或控制流程。
+
+想在不消耗 token 的情况下测试项目接入？可以运行内置玩具基准：
+
+```bash
+cd examples/hello_benchmark
+arbor init --run-baseline
+```
+
+想看一个更接近领域任务的示例？内置的 magnonics 基准包含完整评估器、参考色散数据、可编辑材料参数、
+`outputs/metrics.json` 合同，以及一个 Arena-lab-inspired 的薄膜自旋动力学场景。该场景明确不是任何实验室、
+仪器、配方或数据集的精确模型。
+
+```bash
+arbor demo --benchmark magnonics --no-webui --rounds 1
+cd examples/magnonics_benchmark
+python scripts/evaluate.py --config configs/example.yaml
+```
+
+在真实运行前估算模型成本：
+
+```bash
+arbor cost --model claude-sonnet-4-6 --preset standard
+arbor cost --model local-gateway --input-price 0.20 --output-price 0.80
+arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset pilot
+```
+
+AI 交接说明与 magnonics / 实验室路线图位于 [`AI_README.md`](AI_README.md)。
 
 ### 准备基准
 
@@ -220,6 +262,9 @@ ROOT（基线：20%）
 | ------------------------ | ----------------------------------------------------------- |
 | `arbor`                  | 启动交互式研究会话。                                        |
 | `arbor setup`            | 配置模型提供商 / 模型 / API 密钥 → `~/.arbor/config.yaml`。 |
+| `arbor demo`             | 离线回放一次仪表盘/WebUI 演示，无需 API key。               |
+| `arbor init`             | 在目标项目中生成 starter `arbor.yaml`，并可运行基线。       |
+| `arbor cost`             | 根据计划运行形态或 `events.jsonl` 粗略估算 LLM 成本。       |
 | `arbor report <session>` | 重新渲染某次历史会话的 `REPORT.md`。                        |
 | `arbor doctor`           | 诊断安装状态、PATH、git 及 API 密钥。                       |
 | `arbor version`          | 打印已安装的版本号。                                        |

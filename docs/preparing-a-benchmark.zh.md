@@ -63,6 +63,16 @@ cd my_task
 arbor
 ```
 
+如果你想在启动前生成一份可复用 starter 配置，可以运行：
+
+```bash
+arbor init --run-baseline
+```
+
+它会检测常见评估命令、写入 `arbor.yaml`、建议保护 `data/` 等路径，并确认基线能打印可解析指标。之后你可以编辑该文件，也可以完全跳过它，让接入对话交互式收集同样的信息。
+
+若想看一个完整的领域评估器示例，请查看 `examples/magnonics_benchmark/`。它模拟一个合成 magnonics 色散任务，把参考数据与可编辑候选参数分开，并写出供 Arbor 评分的 `outputs/metrics.json`。该示例还包含物理/逻辑可信度评分、证据门控、FMR/材料族/温度/工艺检查、本地文献和材料数据库 hooks、失败记忆、实验室 intake、人审 gate、config 驱动的 `arbor cost` 估算，以及 `scenario/arena_lab_inspired.yaml`。该场景围绕薄膜自旋动力学主题，但不声称精确建模任何实验室。
+
 在**接入对话**里，智能体检视仓库（以及你的 README，如果有的话），陈述它推断出的指标、基线、
 目标与约束，并请你一次性确认或纠正。确认开始后，它就启动研究——提出假设、修改你的代码、运行真实
 实验，并只保留那些提升了留出分数的改动。

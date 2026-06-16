@@ -3,6 +3,10 @@
 This directory is the target project that Arbor should iterate on.
 Arbor itself lives one directory up.
 
+For the repo-level AI handoff, onboarding changes, and magnonics/lab-roadmap,
+read `../AI_README.md` first. This file remains the Nix/simulation-environment
+handoff for `simulation_project/`.
+
 Real storage location:
 
 ```text
@@ -360,6 +364,9 @@ has to reason about for every experiment.
 ## Next Work
 
 Recommended next steps for the next AI or human:
+
+0. If the task is about Arbor onboarding or the magnonics lab demo, switch to
+   the repo root and read `../AI_README.md` before changing this scaffold.
 
 1. Keep `base` as Arbor's default evaluation shell until the real metric exists.
 2. Replace `scripts/evaluate.py` with the first real simulation workflow once

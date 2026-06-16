@@ -53,3 +53,9 @@ def test_main_suggests_close_unknown_command(monkeypatch: pytest.MonkeyPatch, ca
     assert exc.value.code == 2
     assert called is False
     assert "Did you mean 'doctor'?" in captured.err
+
+
+def test_new_onboarding_commands_are_known() -> None:
+    assert "demo" in cli_app._KNOWN_COMMANDS
+    assert "init" in cli_app._KNOWN_COMMANDS
+    assert "cost" in cli_app._KNOWN_COMMANDS

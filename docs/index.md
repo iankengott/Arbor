@@ -20,13 +20,13 @@ propagate back up the tree so later ideas start smarter.
 
 -   :material-rocket-launch: **Get running in minutes**
 
-    Clone, `pip install -e .`, `arbor setup`, then `arbor`.
+    Clone, install, run `arbor demo`, then configure a provider.
 
     [:octicons-arrow-right-24: Installation](installation.md)
 
 -   :material-flask: **Run your first study**
 
-    Point Arbor at a benchmark and watch the Idea Tree grow.
+    Try the magnonics demo or point Arbor at your own benchmark.
 
     [:octicons-arrow-right-24: Quickstart](quickstart.md)
 

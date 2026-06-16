@@ -1,0 +1,18 @@
+task: >
+  Improve the Arena-lab-inspired thin-film spin-dynamics benchmark score by
+  editing candidate/material_params.yaml only. The scenario is inspired by
+  damping, anisotropy, propagation length, FMR, and temperature themes, but it
+  is not an exact model of any lab, instrument, recipe, or dataset. Preserve
+  scripts/, configs/, reference/, scenario/, and outputs/ as evaluator,
+  scenario, or generated-artifact paths.
+
+executor:
+  experiment_cmd: "python scripts/evaluate.py --config configs/example.yaml"
+  max_turns: 30
+
+coordinator:
+  max_cycles: 3
+  max_depth: 2
+  merge_threshold: 0.01
+  ui:
+    interaction_mode: review

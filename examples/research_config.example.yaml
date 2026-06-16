@@ -55,7 +55,7 @@ ui:
 #   provider: openai-chat
 #   model: deepseek-reasoner           # or deepseek-chat
 #   base_url: https://api.deepseek.com
-#   api_key: sk-...
+#   api_key: ${DEEPSEEK_API_KEY}
 #
 # Qwen via Alibaba DashScope — let `auto` probe Responses vs chat:
 #   provider: auto

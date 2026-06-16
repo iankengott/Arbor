@@ -4,6 +4,11 @@ This directory contains a Codex/Claude Code skill suite that reconstructs the
 open-source Arbor/AutoResearch behavior from `arbor` as a set of
 Agent Skills.
 
+This README covers the skill-suite installation path. For the native CLI
+onboarding commands (`arbor demo`, `arbor init`, `arbor cost`) and the
+magnonics/lab roadmap, see [`../README.md`](../README.md) and
+[`../AI_README.md`](../AI_README.md).
+
 Most users should invoke only the public entrypoint:
 
 ```text

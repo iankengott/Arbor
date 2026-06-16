@@ -1,0 +1,12 @@
+target_property: long magnon/spin propagation proxy with low Gilbert damping
+available_instruments: sputtering,AFM,MOKE,magnetometry,FMR,optical_microscope
+materials_of_interest: Fe-Gd-like ferrimagnetic alloy,Pt cap,Pt bilayer,Pt/Co/Ir comparison,TmIG/Pt inspiration
+forbidden_materials: toxic precursors without EHS approval,air-sensitive uncapped metallic films for storage
+forbidden_processes: unapproved high-temperature anneal,unknown substrate cleaning,process routes outside local tooling
+available_datasets: reference/dispersion.csv,literature/*.md,materials/material_systems.csv,candidate/material_params.yaml
+preferred_simulators: analytic_dispersion,micromagnetic_solver,spin_wave_tool,notebook
+success_criteria: physics_score >= 0.70,plausibility_score >= 0.70,literature_notes evidence,database_evidence,FMR linewidth check,AFM roughness before promotion
+human_review_required: true
+review_before_deeper_simulation: true
+review_before_promoting_candidate: true
+do_not_trust_until_measured: true

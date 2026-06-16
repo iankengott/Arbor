@@ -132,12 +132,24 @@ runtime skills stored under `src/arbor/skills/`.
 
 **Requirements:** Python ≥ 3.10 and Git. A virtual environment is recommended.
 
+Fast path:
+
+```bash
+git clone https://github.com/iankengott/Arbor.git
+cd Arbor
+./scripts/install.sh
+source .venv/bin/activate
+arbor demo
+```
+
+Manual path:
+
 ```bash
 git clone https://github.com/iankengott/Arbor.git
 cd Arbor
 python -m venv .venv && source .venv/bin/activate   # recommended
 pip install -e .                                    # or: uv pip install -e .
-arbor doctor                                        # verify PATH, git, API keys
+arbor doctor                                        # verify PATH, git, setup state
 ```
 
 > Prefer a global command? `pipx install -e .` makes `arbor` available everywhere.
@@ -154,9 +166,12 @@ arbor doctor                                        # verify PATH, git, API keys
 ## ⚡ Getting Started
 
 ```bash
+arbor demo        # offline confidence check; no API key needed
+arbor demo --benchmark magnonics
+arbor cost --model claude-sonnet-4-6 --preset standard
 arbor setup       # one-time: configure provider / model / base_url / API key
+arbor init        # optional: create arbor.yaml in your target project
 arbor             # start an interactive session in the current directory
-arbor doctor      # diagnose the install
 ```
 
 `arbor setup` writes `~/.arbor/config.yaml`, so day-to-day you can just run `arbor`
@@ -164,6 +179,40 @@ with no flags. The first thing Arbor does is an **intake conversation** that tur
 goal, target directory, metric, baseline, budget, dev/test discipline, and artifact
 paths into a one-screen **Arbor Research Contract**. Once you confirm it, the live
 dashboard takes over.
+
+Want to test project setup without spending tokens? Try the bundled toy benchmark:
+
+```bash
+cd examples/hello_benchmark
+arbor init --run-baseline
+```
+
+Want a domain-shaped example? The bundled magnonics benchmark includes a full
+evaluator, reference dispersion data, editable material parameters, and an
+`outputs/metrics.json` contract with `score`, `physics_score`,
+`plausibility_score`, `plausibility_failures`, supporting `evidence`, evidence
+gates for "promising" claims, P1 magnonics checks for FMR, material family,
+temperature, and fabrication assumptions, P2 local literature/database hooks,
+failure memory, simulator abstraction, staged pre-screening, plus ranked
+candidate report outputs with lab intake, human review gates, and an
+Arena-lab-inspired thin-film spin-dynamics scenario that is explicitly not an
+exact lab model:
+
+```bash
+arbor demo --benchmark magnonics --no-webui --rounds 1
+cd examples/magnonics_benchmark
+python scripts/evaluate.py --config configs/example.yaml
+```
+
+To plan model spend before a real run:
+
+```bash
+arbor cost --model claude-sonnet-4-6 --preset standard
+arbor cost --model local-gateway --input-price 0.20 --output-price 0.80
+arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset pilot
+```
+
+The AI handoff and magnonics/lab-roadmap live in [`AI_README.md`](AI_README.md).
 
 ```bash
 # Point at a benchmark directory and a config

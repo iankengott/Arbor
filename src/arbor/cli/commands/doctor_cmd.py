@@ -34,6 +34,7 @@ def doctor_command() -> None:
     typer.secho(f"\n{APP_NAME} doctor\n", fg=typer.colors.CYAN, bold=True)
 
     problems = 0
+    setup_needed = 0
 
     # ── PATH ─────────────────────────────────────────────────────
     typer.secho("install", bold=True)
@@ -121,13 +122,18 @@ def doctor_command() -> None:
     if not (has_anth or has_oai or has_cfg or has_legacy):
         _warn(
             "no API key found (env or config)",
-            f"set ANTHROPIC_API_KEY / OPENAI_API_KEY, or run `{APP_NAME} config init`",
+            f"run `{APP_NAME} setup`, or set ANTHROPIC_API_KEY / OPENAI_API_KEY",
         )
+        setup_needed += 1
 
     # ── summary ──────────────────────────────────────────────────
     typer.echo()
     if problems == 0:
-        typer.secho("all checks passed.", fg=typer.colors.GREEN, bold=True)
+        if setup_needed:
+            typer.secho("install checks passed; setup still needed.", fg=typer.colors.YELLOW, bold=True)
+            typer.echo(f"Next: {APP_NAME} setup")
+            raise typer.Exit(code=1)
+        typer.secho("all checks passed. Arbor is ready to run.", fg=typer.colors.GREEN, bold=True)
         raise typer.Exit(code=0)
     typer.secho(f"{problems} issue(s) — fix the items above.",
                 fg=typer.colors.YELLOW, bold=True)

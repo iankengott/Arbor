@@ -2,7 +2,56 @@
 
 This guide takes you from a fresh install to a running research session.
 
-## 1. Configure a provider
+## 1. Verify the install offline
+
+Before you use an API key or point Arbor at a real project, run the bundled demo:
+
+```bash
+arbor demo
+```
+
+This replays a mock research run through the real terminal dashboard, EventBus, and
+optional WebUI. It is a confidence check only: no model calls, no edits, and no cost.
+
+For a domain-shaped evaluator, run the magnonics benchmark demo:
+
+```bash
+arbor demo --benchmark magnonics --no-webui --rounds 1
+```
+
+That benchmark lives under `examples/magnonics_benchmark/` and includes reference
+dispersion data, editable candidate material parameters, an evaluator script, and
+`outputs/metrics.json` with a lab-relevant `score`, physical/logical
+`physics_score`, lab-default `plausibility_score`, `plausibility_failures`,
+supporting `evidence`, evidence gates for "promising" claims, FMR/material
+family/temperature/fabrication checks, local literature/database hooks, failure
+memory, simulator abstraction, staged pre-screening, and ranked candidate report
+outputs with lab intake, human review gates, and an Arena-lab-inspired
+thin-film spin-dynamics scenario that is explicitly not an exact lab model.
+
+You can also test project initialization on the tiny example benchmark:
+
+```bash
+cd examples/hello_benchmark
+arbor init --run-baseline
+```
+
+`arbor init` creates a starter `arbor.yaml`, detects common eval scripts such as
+`eval.py` / `eval.sh`, suggests protected paths, and can run the baseline once to verify
+that a metric like `score: 0.8123` is visible.
+
+You can also sketch a model budget before starting:
+
+```bash
+arbor cost --model claude-sonnet-4-6 --preset standard
+arbor cost --model claude-sonnet-4-6 --magnonics-config examples/magnonics_benchmark/configs/example.yaml --preset pilot
+```
+
+Cost estimates are useful for rough budgeting, not exact billing. Real spend depends on
+actual turns, context growth, retries, output length, cache hits, provider routing, and
+current provider prices.
+
+## 2. Configure a provider
 
 Run the interactive setup wizard once. It writes your provider, model, and API key to a
 user config so you don't repeat them on every run:
@@ -38,7 +87,7 @@ Prefer to do it by hand? Set environment variables instead:
 
 See [Configuration](configuration.md) for the full provider matrix.
 
-## 2. Start a session
+## 3. Start a session
 
 The way to use Arbor is to run `arbor` inside your project directory:
 
@@ -72,7 +121,7 @@ watching progress and steering the run with slash commands.
 
     For day-to-day use, prefer the interactive `arbor` above.
 
-## 3. Watch it work
+## 4. Watch it work
 
 While a run is active you get three views:
 
@@ -84,7 +133,7 @@ While a run is active you get three views:
 Inside the dashboard you can steer the run with slash commands such as `/status`, `/tree`,
 `/evidence`, `/cost`, `/pause`, and `/resume`. See the [CLI reference](cli.md#interactive-slash-commands).
 
-## 4. Read the results
+## 5. Read the results
 
 When the run completes, Arbor writes a `REPORT.md` and opens an optional read-only Q&A
 prompt so you can interrogate the finished study (disable with `--no-followup`). All

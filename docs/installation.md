@@ -9,6 +9,21 @@
 
 ## Install
 
+Fast path from a fresh clone:
+
+```bash
+git clone https://github.com/RUC-NLPIR/Arbor.git
+cd Arbor
+./scripts/install.sh
+source .venv/bin/activate
+arbor demo
+```
+
+The installer checks Python/Git, creates `.venv`, installs Arbor in editable mode, runs
+`arbor doctor`, and prints the next commands.
+
+Manual install:
+
 ```bash
 git clone https://github.com/RUC-NLPIR/Arbor.git
 cd Arbor
@@ -43,11 +58,14 @@ environment. We recommend a virtual environment so it stays isolated:
 ```bash
 arbor version
 arbor doctor      # checks PATH, venv leakage, git, and API keys
+arbor demo        # offline dashboard/WebUI smoke test; no API key needed
+arbor cost --list-models
 ```
 
 `arbor doctor` is the fastest way to catch a broken setup — it reports which `arbor` your
 shell resolves, which Python it runs on, whether `git` is available, and whether your
-user config exists.
+user config exists. If credentials are missing, install checks can pass while the summary
+still says setup is needed; run `arbor setup` when you are ready for model-backed runs.
 
 ## Optional: a global `arbor` command with pipx
 
@@ -66,6 +84,10 @@ pipx reinstall arbor     # upgrade later
     The package was installed into an environment that isn't active or on your `PATH`.
     Activate the right virtual environment, or use the pipx install above. Run
     `arbor doctor` for a diagnosis.
+
+!!! tip "NixOS / shell.nix"
+    This repository includes `shell.nix` for development. If a console script lands
+    outside `PATH`, `python -m arbor.cli.app ...` uses the same CLI entry point.
 
 ## Next steps
 

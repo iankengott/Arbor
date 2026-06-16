@@ -1,0 +1,63 @@
+candidate: candidate/material_params.yaml
+reference: reference/dispersion.csv
+outputs: outputs
+lab_intake: lab_intake.yaml
+demo_scenario: scenario/arena_lab_inspired.yaml
+literature_dir: literature
+materials_database: materials/material_systems.csv
+failure_memory: outputs/failure_memory.json
+human_review:
+  require_before_deeper_simulation: true
+  require_before_promoting_candidate: true
+  reviewer: human PI or grad-student reviewer
+  status: pending
+simulator:
+  backend: analytic_dispersion
+  command: python scripts/evaluate.py --config configs/example.yaml
+  kind: analytic
+  status: available
+material_family: sputtered_re_tm_ferrimagnetic_thin_film
+process_route: sputtering
+required_evidence: evaluator_output,literature_notes,database_evidence
+target_group_velocity: 1.35
+target_propagation_length: 35.0
+minimum_propagation_length: 8.0
+target_damping: 0.025
+max_preferred_damping: 0.060
+inhomogeneous_linewidth: 0.000
+fmr_field_points: 0.05,0.18,0.35,0.60
+min_linewidth: 0.0001
+max_linewidth: 0.20
+ideal_min_linewidth: 0.001
+ideal_max_linewidth: 0.08
+min_anisotropy_field: 0.04
+max_anisotropy_field: 1.60
+ideal_min_anisotropy_field: 0.12
+ideal_max_anisotropy_field: 0.90
+temperature_reference_C: 25.0
+temperature_points_C: 25,50,100
+damping_temp_coefficient: 0.0015
+anisotropy_temp_coefficient: 0.0010
+weights:
+  rmse: 1.0
+  group_velocity: 0.08
+  damping: 0.03
+objective_weights:
+  propagation_length: 0.30
+  low_damping: 0.20
+  dispersion_match: 0.20
+  fmr_resonance_window: 0.10
+  useful_anisotropy: 0.10
+  plausibility: 0.10
+recipe:
+  composition: Fe-Gd-like rare-earth/transition-metal alloy sweep
+  thickness_nm: 20.0
+  stack: substrate / Fe-Gd-like ferrimagnet / Pt cap
+  cap_layer: Pt
+  substrate: Si/SiO2
+  sputter_pressure_mTorr: 3.0
+  sputter_power_W: 75.0
+  anneal_temperature_C: 25.0
+  anneal: no anneal for initial screen
+  roughness_risk: unknown until AFM is measured
+  next_measurement: AFM roughness, MOKE/magnetometry hysteresis, then FMR linewidth-vs-frequency
